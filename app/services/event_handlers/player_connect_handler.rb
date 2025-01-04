@@ -1,4 +1,6 @@
 module EventHandlers
+  BOT_STEAM_ID = 0
+
   class PlayerConnectHandler
     def self.handle(event_data)
       return unless EventHandlers::MainHandler.valid?(event_data: event_data)
@@ -7,6 +9,8 @@ module EventHandlers
 
       steam_id = event_data.dig('DATA', 'STEAM_ID')
       name = event_data.dig('DATA', 'NAME')
+
+      steam_id = bot_steam_id(name) if steam_id === BOT_STEAM_ID
 
       create_player(steam_id: steam_id, name: name)
     end
@@ -18,6 +22,11 @@ module EventHandlers
       player.update!(name: name)
 
       player
+    end
+
+    # Converts the bot name to a unique ID for bots
+    def self.bot_steam_id(name)
+      Digest::MD5.hexdigest(name)
     end
   end
 end
