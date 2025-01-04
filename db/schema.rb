@@ -15,7 +15,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
   enable_extension "plpgsql"
 
   create_table "medals", force: :cascade do |t|
-    t.bigint "player_stat_id", null: false
+    t.bigint "stat_id", null: false
     t.integer "accuracy", default: 0
     t.integer "assists", default: 0
     t.integer "captures", default: 0
@@ -34,11 +34,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
     t.integer "revenge", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["player_stat_id"], name: "index_medals_on_player_stat_id"
+    t.index ["stat_id"], name: "index_medals_on_stat_id"
   end
 
   create_table "pickups", force: :cascade do |t|
-    t.bigint "player_stat_id", null: false
+    t.bigint "stat_id", null: false
     t.integer "ammo", default: 0
     t.integer "armor", default: 0
     t.integer "armor_regen", default: 0
@@ -65,10 +65,19 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
     t.integer "yellow_armor", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["player_stat_id"], name: "index_pickups_on_player_stat_id"
+    t.index ["stat_id"], name: "index_pickups_on_stat_id"
   end
 
-  create_table "player_stats", force: :cascade do |t|
+  create_table "players", force: :cascade do |t|
+    t.string "steam_id"
+    t.string "name"
+    t.string "model"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["steam_id"], name: "index_players_on_steam_id", unique: true
+  end
+
+  create_table "stats", force: :cascade do |t|
     t.bigint "player_id", null: false
     t.boolean "aborted", default: false
     t.integer "blue_flag_pickups", default: 0
@@ -95,20 +104,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
     t.boolean "win", default: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["player_id"], name: "index_player_stats_on_player_id"
-  end
-
-  create_table "players", force: :cascade do |t|
-    t.string "steam_id"
-    t.string "name"
-    t.string "model"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["steam_id"], name: "index_players_on_steam_id", unique: true
+    t.index ["player_id"], name: "index_stats_on_player_id"
   end
 
   create_table "weapons", force: :cascade do |t|
-    t.bigint "player_stat_id", null: false
+    t.bigint "stat_id", null: false
     t.string "name", null: false
     t.integer "deaths", default: 0
     t.integer "damage_given", default: 0
@@ -120,11 +120,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
     t.integer "time", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["player_stat_id"], name: "index_weapons_on_player_stat_id"
+    t.index ["stat_id"], name: "index_weapons_on_stat_id"
   end
 
-  add_foreign_key "medals", "player_stats"
-  add_foreign_key "pickups", "player_stats"
-  add_foreign_key "player_stats", "players"
-  add_foreign_key "weapons", "player_stats"
+  add_foreign_key "medals", "stats"
+  add_foreign_key "pickups", "stats"
+  add_foreign_key "stats", "players"
+  add_foreign_key "weapons", "stats"
 end

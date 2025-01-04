@@ -1,6 +1,6 @@
 class CreateStats < ActiveRecord::Migration[7.2]
   def change
-    create_table :player_stats do |t|
+    create_table :stats do |t|
       t.references :player, null: false, foreign_key: true
       t.boolean :aborted, default: false
       t.integer :blue_flag_pickups, default: 0

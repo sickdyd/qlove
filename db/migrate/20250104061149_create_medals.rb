@@ -1,7 +1,7 @@
 class CreateMedals < ActiveRecord::Migration[7.2]
   def change
     create_table :medals do |t|
-      t.references :player_stat, null: false, foreign_key: true
+      t.references :stat, null: false, foreign_key: true
       t.integer :accuracy, default: 0
       t.integer :assists, default: 0
       t.integer :captures, default: 0

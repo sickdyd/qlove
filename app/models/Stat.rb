@@ -1,4 +1,4 @@
-class PlayerStat < ApplicationRecord
+class Stat < ApplicationRecord
   belongs_to :player
   has_many :medals, dependent: :destroy
   has_many :pickups, dependent: :destroy

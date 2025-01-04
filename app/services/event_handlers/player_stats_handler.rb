@@ -1,16 +1,16 @@
 module EventHandlers
   class PlayerStatsHandler
     def self.handle(event_data)
-      return unless EventHandlers::MainHandler.valid?(event_data: event_data, additional_filters: { 'WARMUP' => false })
+      return unless EventHandlers::MainHandler.valid?(event_data: event_data, filters: { 'WARMUP' => false })
 
       Rails.logger.info "Handling PLAYER_STATS event: #{event_data}"
 
       data = event_data['DATA']
+      steam_id = data.dig('STEAM_ID')
+      name = data.dig('NAME')
+      player = EventHandlers::PlayerConnectHandler.create_player(steam_id: steam_id, name: name)
 
-      player = Player.find_or_create_by(steam_id: data['STEAM_ID'])
-      player.update!(name: data['NAME'])
-
-      player_stat = PlayerStat.create!(
+      stat = Stat.create!(
         player: player,
         match_guid: data['MATCH_GUID'],
         aborted: data['ABORTED'],
@@ -40,7 +40,7 @@ module EventHandlers
         medals_data = data['MEDALS']
 
         Medal.create!(
-          player_stat: player_stat,
+          stat: stat,
           accuracy: medals_data['ACCURACY'],
           assists: medals_data['ASSISTS'],
           captures: medals_data['CAPTURES'],
@@ -64,7 +64,7 @@ module EventHandlers
         pickups_data = data['PICKUPS']
 
         Pickup.create!(
-          player_stat: player_stat,
+          stat: stat,
           ammo: pickups_data['AMMO'],
           armor: pickups_data['ARMOR'],
           armor_regen: pickups_data['ARMOR_REGEN'],
@@ -95,7 +95,7 @@ module EventHandlers
       if data['WEAPONS']
         data['WEAPONS'].each do |name, stats|
           Weapon.create!(
-            player_stat: player_stat,
+            stat: stat,
             name: name.downcase,
             deaths: stats['D'],
             damage_given: stats['DG'],

@@ -1,7 +1,7 @@
 class CreatePickups < ActiveRecord::Migration[7.2]
   def change
     create_table :pickups do |t|
-      t.references :player_stat, null: false, foreign_key: true
+      t.references :stat, null: false, foreign_key: true
       t.integer :ammo, default: 0
       t.integer :armor, default: 0
       t.integer :armor_regen, default: 0
