@@ -5,7 +5,6 @@ gem "rails", "~> 7.2.1", ">= 7.2.1.2"
 gem 'pg', '~> 1.1'
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
-gem 'sidekiq'
 gem 'ffi-rzmq'
 gem 'dotenv-rails', groups: [:development, :test]
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
