@@ -3,7 +3,7 @@ module EventHandlers
     def self.handle(event_data)
       return unless EventHandlers::MainHandler.valid?(event_data: event_data)
 
-      Rails.logger.info "Handling PLAYER_CONNECT event: #{event_data}"
+      Rails.logger.debug "Handling PLAYER_CONNECT event: #{event_data}"
 
       steam_id = event_data.dig('DATA', 'STEAM_ID')
       name = event_data.dig('DATA', 'NAME')

@@ -3,7 +3,7 @@ module EventHandlers
     def self.handle(event_data)
       return unless EventHandlers::MainHandler.valid?(event_data: event_data, filters: { 'WARMUP' => false })
 
-      Rails.logger.info "Handling PLAYER_STATS event: #{event_data}"
+      Rails.logger.debug "Handling PLAYER_STATS event: #{event_data}"
 
       data = event_data['DATA']
       steam_id = data.dig('STEAM_ID')
@@ -109,7 +109,7 @@ module EventHandlers
         end
       end
 
-      Rails.logger.info "PLAYER_STATS event processed successfully for player: #{player.name} (#{player.steam_id})"
+      Rails.logger.debug "PLAYER_STATS event processed successfully for player: #{player.name} (#{player.steam_id})"
     rescue StandardError => e
       Rails.logger.error "Failed to process PLAYER_STATS event: #{e.message}"
       Rails.logger.error e.backtrace.join("\n")

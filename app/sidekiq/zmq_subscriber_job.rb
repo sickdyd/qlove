@@ -48,7 +48,7 @@ class ZmqSubscriberJob
     handler_class = EVENT_HANDLER_MAP[event_type]
 
     if handler_class.blank?
-      Rails.logger.info "Handler does not exist (event type: #{event_type}), ignoring."
+      Rails.logger.debug "Handler does not exist (event type: #{event_type}), ignoring."
     else
       handler_class.handle(event_data)
     end
