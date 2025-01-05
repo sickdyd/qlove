@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       get :accuracies
       get :damage_dealt
       get :damage_received
+      get :kills
+      get :deaths
     end
   end
 

@@ -6,15 +6,23 @@ class LeaderboardsController < ApplicationController
   MIN_RESULTS_LIMIT = 1
 
   def accuracy
-    render json: { accuracy: AccuracyCalculatorService.accuracy(**leaderboard_params) }
+    render json: { data: AccuracyCalculatorService.data(**leaderboard_params) }
   end
 
   def damage_dealt
-    render json: { accuracy: DamageCalculatorService.damage_dealt(**leaderboard_params) }
+    render json: { data: DamageCalculatorService.damage_dealt(**leaderboard_params) }
   end
 
   def damage_received
-    render json: { accuracy: DamageCalculatorService.damage_received(**leaderboard_params) }
+    render json: { data: DamageCalculatorService.damage_received(**leaderboard_params) }
+  end
+
+  def kills
+    render json: { data: KillDeathCalculatorService.kills(**leaderboard_params) }
+  end
+
+  def deaths
+    render json: { data: KillDeathCalculatorService.deaths(**leaderboard_params) }
   end
 
   private
