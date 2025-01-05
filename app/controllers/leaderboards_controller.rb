@@ -7,7 +7,7 @@ class LeaderboardsController < ApplicationController
 
   def accuracy
     weapons = params[:weapons]&.split(',')&.map(&:downcase)
-    params_with_weapons = leaderboard_params.merge(weapons: weapons.blank? ? AccuracyCalculatorService::ALL_WEAPONS : weapons)
+    params_with_weapons = leaderboard_params.merge(weapons: weapons.present? ? weapons : AccuracyCalculatorService::ALL_WEAPONS)
 
     render json: { data: AccuracyCalculatorService.accuracy(**params_with_weapons) }
   end
@@ -54,11 +54,9 @@ class LeaderboardsController < ApplicationController
     end
 
     weapons = params[:weapons]&.split(',')&.map(&:downcase)
-    params_with_weapons = leaderboard_params.merge(weapons: weapons.blank? ? AccuracyCalculatorService::ALL_WEAPONS : weapons)
-
     params_with_additional_data = leaderboard_params.merge(
       steam_id: params[:steam_id],
-      weapons: weapons
+      weapons: weapons.present? ? weapons : AccuracyCalculatorService::ALL_WEAPONS
     )
 
     render json: { data: AccuracyCalculatorService.accuracy(**params_with_additional_data) }
