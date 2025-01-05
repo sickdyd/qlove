@@ -11,6 +11,10 @@ module TimeFilterable
   }.freeze
 
   def self.start_time_for(time_filter:, timezone:)
+    unless TIME_FILTERS.values.include?(time_filter) && VALID_TIMEZONES.include?(timezone)
+      raise ArgumentError, 'Invalid time_filter or timezone'
+    end
+
     case time_filter
     when TIME_FILTERS[:day]
       Time.current.in_time_zone(timezone).beginning_of_day
