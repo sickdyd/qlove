@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   resources :leaderboards, only: [] do
     collection do
-      get :accuracies
+      get :accuracy
       get :damage_dealt
       get :damage_received
       get :kills

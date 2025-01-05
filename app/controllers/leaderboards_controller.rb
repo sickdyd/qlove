@@ -6,7 +6,10 @@ class LeaderboardsController < ApplicationController
   MIN_RESULTS_LIMIT = 1
 
   def accuracy
-    render json: { data: AccuracyCalculatorService.accuracy(**leaderboard_params) }
+    weapons = params[:weapons]&.split(',')&.map(&:downcase)
+    params_with_weapons = leaderboard_params.merge(weapons: weapons.blank? ? AccuracyCalculatorService::ALL_WEAPONS : weapons)
+
+    render json: { data: AccuracyCalculatorService.accuracy(**params_with_weapons) }
   end
 
   def damage_dealt
@@ -38,9 +41,9 @@ class LeaderboardsController < ApplicationController
   end
 
   def medals
-    params_with_medals = leaderboard_params.merge(medal_types: params[:medal_types]&.split(',')&.map(&:downcase))
+    params_with_medal_types = leaderboard_params.merge(medal_types: params[:medal_types]&.split(',')&.map(&:downcase))
 
-    render json: { data: MedalCalculatorService.medals(**params_with_medals) }
+    render json: { data: MedalCalculatorService.medals(**params_with_medal_types) }
   end
 
   # Return the accuracy for a single player
@@ -50,9 +53,15 @@ class LeaderboardsController < ApplicationController
       return
     end
 
-    params_with_steam_id = leaderboard_params.merge(steam_id: params[:steam_id])
+    weapons = params[:weapons]&.split(',')&.map(&:downcase)
+    params_with_weapons = leaderboard_params.merge(weapons: weapons.blank? ? AccuracyCalculatorService::ALL_WEAPONS : weapons)
 
-    render json: { data: AccuracyCalculatorService.accuracy(**params_with_steam_id) }
+    params_with_additional_data = leaderboard_params.merge(
+      steam_id: params[:steam_id],
+      weapons: weapons
+    )
+
+    render json: { data: AccuracyCalculatorService.accuracy(**params_with_additional_data) }
   end
 
   private
@@ -69,7 +78,9 @@ class LeaderboardsController < ApplicationController
     validate_time_filter
     validate_timezone
     validate_results_limit
+    validate_medal_types
     validate_steam_id
+    validate_weapons
   end
 
   def validate_time_filter
@@ -112,6 +123,16 @@ class LeaderboardsController < ApplicationController
 
     unless Player.exists?(steam_id: params[:steam_id])
       render json: { error: 'Invalid steam_id' }, status: :bad_request
+    end
+  end
+
+  def validate_weapons
+    return unless params[:weapons].present?
+
+    weapons = params[:weapons].split(',')
+    invalid_weapons = weapons - AccuracyCalculatorService::ALL_WEAPONS
+    if invalid_weapons.any?
+      render json: { error: 'Invalid weapons', valid_weapons: AccuracyCalculatorService::ALL_WEAPONS }, status: :bad_request
     end
   end
 end

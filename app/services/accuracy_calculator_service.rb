@@ -1,7 +1,24 @@
 class AccuracyCalculatorService
   include TimeFilterable
 
-  def self.accuracy(time_filter:, timezone:, limit:, steam_id: nil)
+  ALL_WEAPONS = %w[
+    bfg
+    chaingun
+    gauntlet
+    grenade
+    hmg
+    lightning
+    machinegun
+    nailgun
+    other_weapon
+    plasma
+    proxmine
+    railgun
+    rocket
+    shotgun
+  ].freeze
+
+  def self.accuracy(time_filter:, timezone:, limit:, steam_id: nil, weapons: ALL_WEAPONS)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?
@@ -10,6 +27,7 @@ class AccuracyCalculatorService
       query = Weapon.joins(stat: :player)
       query = query.where('stats.created_at >= ?', start_time)
       query = query.where('players.steam_id = ?', steam_id) if steam_id.present?
+      query = query.where(name: weapons)
 
       results = query.group('players.id', 'players.steam_id', 'players.name', :name)
                      .pluck('players.steam_id', 'players.name', :name, 'SUM(shots) as total_shots', 'SUM(hits) as total_hits')
