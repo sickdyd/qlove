@@ -16,6 +16,7 @@ Rails.application.routes.draw do
       get :wins
       get :losses
       get :best
+      get :stats
     end
   end
 

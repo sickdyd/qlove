@@ -6,7 +6,7 @@ class LeaderboardsController < ApplicationController
   MIN_RESULTS_LIMIT = 1
 
   def accuracy
-    render json: { data: AccuracyCalculatorService.data(**leaderboard_params) }
+    render json: { data: AccuracyCalculatorService.accuracy(**leaderboard_params) }
   end
 
   def damage_dealt
@@ -43,6 +43,18 @@ class LeaderboardsController < ApplicationController
     render json: { data: MedalCalculatorService.medals(**params_with_medals) }
   end
 
+  # Return the accuracy for a single player
+  def stats
+    unless params[:steam_id].present?
+      render json: { error: 'Need to specify steam_id query parameter' }, status: :bad_request
+      return
+    end
+
+    params_with_steam_id = leaderboard_params.merge(steam_id: params[:steam_id])
+
+    render json: { data: AccuracyCalculatorService.accuracy(**params_with_steam_id) }
+  end
+
   private
 
   def leaderboard_params
@@ -57,7 +69,7 @@ class LeaderboardsController < ApplicationController
     validate_time_filter
     validate_timezone
     validate_results_limit
-    validate_medal_types
+    validate_steam_id
   end
 
   def validate_time_filter
@@ -92,6 +104,14 @@ class LeaderboardsController < ApplicationController
     invalid_medals = medal_types - MedalCalculatorService::ALL_MEDALS
     if invalid_medals.any?
       render json: { error: 'Invalid medal_types', valid_medal_types: MedalCalculatorService::ALL_MEDALS }, status: :bad_request
+    end
+  end
+
+  def validate_steam_id
+    return unless params[:steam_id].present?
+
+    unless Player.exists?(steam_id: params[:steam_id])
+      render json: { error: 'Invalid steam_id' }, status: :bad_request
     end
   end
 end
