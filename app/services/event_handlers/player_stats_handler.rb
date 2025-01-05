@@ -60,7 +60,7 @@ module EventHandlers
         )
       end
 
-      if data['PICKUPS']
+      if data['PICKUPS'] and ENV['ENABLE_PICKUPS'] || false
         pickups_data = data['PICKUPS']
 
         Pickup.create!(
