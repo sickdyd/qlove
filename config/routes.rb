@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       get :damage_received
       get :kills
       get :deaths
+      get :medals
     end
   end
 

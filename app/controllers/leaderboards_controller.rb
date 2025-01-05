@@ -25,6 +25,12 @@ class LeaderboardsController < ApplicationController
     render json: { data: KillDeathCalculatorService.deaths(**leaderboard_params) }
   end
 
+  def medals
+    params_with_medals = leaderboard_params.merge(medal_types: params[:medal_types]&.split(',')&.map(&:downcase))
+
+    render json: { data: MedalCalculatorService.medals(**params_with_medals) }
+  end
+
   private
 
   def leaderboard_params
@@ -39,6 +45,7 @@ class LeaderboardsController < ApplicationController
     validate_time_filter
     validate_timezone
     validate_results_limit
+    validate_medal_types
   end
 
   def validate_time_filter
@@ -57,8 +64,22 @@ class LeaderboardsController < ApplicationController
 
   def validate_results_limit
     params[:limit] ||= DEFAULT_RESULTS_LIMIT
-    unless params[:limit].to_i.positive? && (params[:limit].to_i <= MAX_RESULTS_LIMIT || params[:limit].to_i <= MIN_RESULTS_LIMIT)
+
+    valid_number = params[:limit].to_i != 0 && params[:limit].to_i.positive?
+    within_range = params[:limit].to_i <= MAX_RESULTS_LIMIT || params[:limit].to_i <= MIN_RESULTS_LIMIT
+
+    unless valid_number && within_range
       render json: { error: 'Invalid limit', valid_limit: "1 to 100" }, status: :bad_request
+    end
+  end
+
+  def validate_medal_types
+    return unless params[:medal_types].present?
+
+    medal_types = params[:medal_types].split(',')
+    invalid_medals = medal_types - MedalCalculatorService::ALL_MEDALS
+    if invalid_medals.any?
+      render json: { error: 'Invalid medal_types', valid_medal_types: MedalCalculatorService::ALL_MEDALS }, status: :bad_request
     end
   end
 end
