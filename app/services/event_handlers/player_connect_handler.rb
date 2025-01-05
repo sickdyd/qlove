@@ -1,5 +1,5 @@
 module EventHandlers
-  BOT_STEAM_ID = 0
+  BOT_STEAM_ID = "0"
 
   class PlayerConnectHandler
     def self.handle(event_data)
@@ -10,16 +10,16 @@ module EventHandlers
       steam_id = event_data.dig('DATA', 'STEAM_ID')
       name = event_data.dig('DATA', 'NAME')
 
-      steam_id = bot_steam_id(name) if steam_id === BOT_STEAM_ID
-
       create_player(steam_id: steam_id, name: name)
     end
 
     def self.create_player(steam_id:, name:)
-      return if steam_id.blank? || name.blank?
+      return if steam_id.blank?
 
-      player = Player.find_or_create_by(steam_id: steam_id)
-      player.update!(name: name)
+      updated_steam_id = steam_id == BOT_STEAM_ID ? bot_steam_id(name) : steam_id
+
+      player = Player.find_or_create_by!(steam_id: updated_steam_id)
+      player.update!(name: name.presence || "UnnamedPlayer")
 
       player
     end
