@@ -15,6 +15,7 @@ Rails.application.routes.draw do
       get :medals
       get :wins
       get :losses
+      get :best
     end
   end
 

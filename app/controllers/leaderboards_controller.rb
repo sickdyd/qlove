@@ -33,6 +33,10 @@ class LeaderboardsController < ApplicationController
     render json: { data: WinLoseCalculatorService.losses(**leaderboard_params) }
   end
 
+  def best
+    render json: { data: BestCalculatorService.best_players(**leaderboard_params) }
+  end
+
   def medals
     params_with_medals = leaderboard_params.merge(medal_types: params[:medal_types]&.split(',')&.map(&:downcase))
 
