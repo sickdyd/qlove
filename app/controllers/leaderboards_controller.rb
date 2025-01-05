@@ -25,6 +25,14 @@ class LeaderboardsController < ApplicationController
     render json: { data: KillDeathCalculatorService.deaths(**leaderboard_params) }
   end
 
+  def wins
+    render json: { data: WinLoseCalculatorService.wins(**leaderboard_params) }
+  end
+
+  def losses
+    render json: { data: WinLoseCalculatorService.losses(**leaderboard_params) }
+  end
+
   def medals
     params_with_medals = leaderboard_params.merge(medal_types: params[:medal_types]&.split(',')&.map(&:downcase))
 
