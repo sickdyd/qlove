@@ -5,16 +5,27 @@ class LeaderboardsController < ApplicationController
   MAX_RESULTS_LIMIT = 100
   MIN_RESULTS_LIMIT = 1
 
-  def accuracies
-    weapon_accuracies_for_all_players = AccuracyCalculatorService.weapon_accuracies_for_all_players(
-      time_filter: params[:time_filter],
-      timezone: params[:timezone],
-      limit: params[:limit].to_i
-    )
-    render json: { weapon_accuracies_for_all_players: weapon_accuracies_for_all_players }
+  def accuracy
+    render json: { accuracy: AccuracyCalculatorService.accuracy(**leaderboard_params) }
+  end
+
+  def damage_dealt
+    render json: { accuracy: DamageCalculatorService.damage_dealt(**leaderboard_params) }
+  end
+
+  def damage_received
+    render json: { accuracy: DamageCalculatorService.damage_received(**leaderboard_params) }
   end
 
   private
+
+  def leaderboard_params
+    {
+      time_filter: params[:time_filter],
+      timezone: params[:timezone],
+      limit: params[:limit].to_i
+    }
+  end
 
   def validate_params
     validate_time_filter

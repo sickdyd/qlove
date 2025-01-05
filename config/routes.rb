@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   resources :leaderboards, only: [] do
     collection do
       get :accuracies
+      get :damage_dealt
+      get :damage_received
     end
   end
 
