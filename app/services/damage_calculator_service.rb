@@ -5,7 +5,7 @@ class DamageCalculatorService
     calculate_damage(time_filter: time_filter, timezone: timezone, limit: limit, sort_by: 'total_damage_dealt')
   end
 
-  def self.damage_received(time_filter:, timezone:, limit:)
+  def self.damage_taken(time_filter:, timezone:, limit:)
     calculate_damage(time_filter: time_filter, timezone: timezone, limit: limit, sort_by: 'total_damage_taken')
   end
 

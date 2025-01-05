@@ -16,8 +16,8 @@ class LeaderboardsController < ApplicationController
     render json: { data: DamageCalculatorService.damage_dealt(**leaderboard_params) }
   end
 
-  def damage_received
-    render json: { data: DamageCalculatorService.damage_received(**leaderboard_params) }
+  def damage_taken
+    render json: { data: DamageCalculatorService.damage_taken(**leaderboard_params) }
   end
 
   def kills

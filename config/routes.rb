@@ -9,7 +9,7 @@ Rails.application.routes.draw do
     collection do
       get :accuracy
       get :damage_dealt
-      get :damage_received
+      get :damage_taken
       get :kills
       get :deaths
       get :medals
