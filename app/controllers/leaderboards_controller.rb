@@ -41,9 +41,10 @@ class LeaderboardsController < ApplicationController
   end
 
   def medals
-    params_with_medal_types = leaderboard_params.merge(medal_types: params[:medal_types]&.split(',')&.map(&:downcase))
+    medals = params[:medals]&.split(',')
+    params_with_medals = leaderboard_params.merge(medals: medals.present? ? medals : MedalCalculatorService::ALL_MEDALS)
 
-    render json: { data: MedalCalculatorService.medals(**params_with_medal_types) }
+    render json: { data: MedalCalculatorService.medals(**params_with_medals) }
   end
 
   # Return the accuracy for a single player
@@ -76,7 +77,7 @@ class LeaderboardsController < ApplicationController
     validate_time_filter
     validate_timezone
     validate_results_limit
-    validate_medal_types
+    validate_medals
     validate_steam_id
     validate_weapons
   end
@@ -106,13 +107,13 @@ class LeaderboardsController < ApplicationController
     end
   end
 
-  def validate_medal_types
-    return unless params[:medal_types].present?
+  def validate_medals
+    return unless params[:medals].present?
 
-    medal_types = params[:medal_types].split(',')
-    invalid_medals = medal_types - MedalCalculatorService::ALL_MEDALS
+    medals = params[:medals].split(',')
+    invalid_medals = medals - MedalCalculatorService::ALL_MEDALS
     if invalid_medals.any?
-      render json: { error: 'Invalid medal_types', valid_medal_types: MedalCalculatorService::ALL_MEDALS }, status: :bad_request
+      render json: { error: 'Invalid medals', valid_medals: MedalCalculatorService::ALL_MEDALS }, status: :bad_request
     end
   end
 

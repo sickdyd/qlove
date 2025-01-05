@@ -21,18 +21,18 @@ class MedalCalculatorService
   ].freeze
 
 
-  def self.medals(time_filter:, timezone:, limit:, medal_types: ALL_MEDALS)
+  def self.medals(time_filter:, timezone:, limit:, medals: ALL_MEDALS)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?
 
-    Rails.logger.info("Medals: #{medal_types}")
+    Rails.logger.info("Medals: #{medals}")
 
     begin
       query = Medal.joins(stat: :player).where('stats.created_at >= ?', start_time)
 
-      selected_medals = medal_types.map { |medal| "SUM(medals.#{medal}) as #{medal}" }
-      total_column = medal_types.map { |medal| "SUM(medals.#{medal})" }.join(" + ")
+      selected_medals = medals.map { |medal| "SUM(medals.#{medal}) as #{medal}" }
+      total_column = medals.map { |medal| "SUM(medals.#{medal})" }.join(" + ")
 
       Rails.logger.info("Selected medals: #{selected_medals}")
       Rails.logger.info("Total column: #{total_column}")
@@ -55,7 +55,7 @@ class MedalCalculatorService
           total_medals: result.total_medals.to_i
         }
 
-        medal_data = medal_types.each_with_object({}) do |medal, hash|
+        medal_data = medals.each_with_object({}) do |medal, hash|
           hash[medal] = result[medal].to_i
         end
 
