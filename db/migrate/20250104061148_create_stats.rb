@@ -24,7 +24,7 @@ class CreateStats < ActiveRecord::Migration[7.2]
       t.integer :tied_rank, default: 0
       t.integer :tied_team_rank, default: 0
       t.boolean :warmup, default: false
-      t.boolean :win, default: false
+      t.integer :win, default: 0
 
       t.timestamps
     end

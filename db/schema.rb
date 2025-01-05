@@ -100,7 +100,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
     t.integer "tied_rank", default: 0
     t.integer "tied_team_rank", default: 0
     t.boolean "warmup", default: false
-    t.boolean "win", default: false
+    t.integer "win", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_stats_on_player_id"
