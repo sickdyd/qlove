@@ -61,7 +61,7 @@ class Api::V1::LeaderboardsController < ApplicationController
   end
 
   def validate_time_filter
-    @time_filter = params[:time_filter].present? ? params[:time_filter] : TIME_FILTERS.values.first
+    @time_filter = params[:time_filter].present? ? params[:time_filter] : TimeFilterable::TIME_FILTERS.values.first
 
     unless TimeFilterable::TIME_FILTERS.values.include?(@time_filter)
       render json: { error: 'Invalid time_filter' }, status: :bad_request
