@@ -77,7 +77,7 @@ class Api::V1::LeaderboardsController < ApplicationController
   end
 
   def validate_limit
-    @limit = params[:limit].to_i
+    @limit = params[:limit].present? ? params[:limit].to_i : DEFAULT_RESULTS_LIMIT
 
     unless @limit.between?(MIN_RESULTS_LIMIT, MAX_RESULTS_LIMIT)
       render json: { error: 'Invalid limit', valid_limits: "#{MIN_RESULTS_LIMIT} to #{MAX_RESULTS_LIMIT}" }, status: :bad_request
