@@ -1,7 +1,7 @@
 module EventHandlers
   class PlayerStatsHandler
     def self.handle(event_data)
-      return unless EventHandlers::MainHandler.valid?(event_data: event_data, filters: { 'WARMUP' => false, 'ABORTED' => false })
+      return unless EventHandlers::Validator.valid?(event_data: event_data, filters: { 'WARMUP' => false, 'ABORTED' => false })
 
       Rails.logger.debug "Handling PLAYER_STATS event: #{event_data}"
 

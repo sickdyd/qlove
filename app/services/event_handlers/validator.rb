@@ -1,5 +1,5 @@
 module EventHandlers
-  class MainHandler
+  class Validator
     def self.valid?(event_data:, filters: {})
 
       if event_data['DATA'].blank?
