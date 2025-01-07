@@ -52,7 +52,7 @@ class BestCalculatorService
       kills = player_data[:total_kills]
       damage_given = player_data[:total_damage_given]
 
-      final_score = (kills * 0.5 + (damage_given / 1000.0) * 0.3 + average_accuracy * 0.9).round
+      final_score = (average_accuracy + (damage_given / 1000.0) * 0.5 + kills * 0.3).round
 
       {
         steam_id: player_data[:steam_id],
