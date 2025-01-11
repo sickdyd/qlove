@@ -8,7 +8,7 @@ module EventHandlers
       data = event_data['DATA']
       steam_id = data.dig('STEAM_ID')
       name = data.dig('NAME')
-      player = EventHandlers::PlayerConnectHandler.create_player(steam_id: steam_id, name: name)
+      player = EventHandlers::PlayerConnectHandler.create_or_update_player(steam_id: steam_id, name: name)
 
       stat = Stat.create!(
         player: player,

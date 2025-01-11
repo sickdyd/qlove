@@ -13,7 +13,7 @@ module EventHandlers
       create_player(steam_id: steam_id, name: name)
     end
 
-    def self.create_player(steam_id:, name:)
+    def self.create_or_update_player(steam_id:, name:)
       return if steam_id.blank?
 
       updated_steam_id = steam_id == BOT_STEAM_ID ? bot_steam_id(name) : steam_id
