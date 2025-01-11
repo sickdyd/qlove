@@ -5,11 +5,11 @@ class DamageCalculatorService
   TOTAL_DAMAGE_TAKEN_COLUMN = 'total_damage_taken'.freeze
 
   def self.damage_dealt(params)
-    calculate_damage(**params.merge({ sort_by: TOTAL_DAMAGE_DEALT_COLUMN }))
+    calculate_damage(**params.merge(sort_by: TOTAL_DAMAGE_DEALT_COLUMN))
   end
 
   def self.damage_taken(params)
-    calculate_damage(**params.merge({ sort_by: TOTAL_DAMAGE_TAKEN_COLUMN }))
+    calculate_damage(**params.merge(sort_by: TOTAL_DAMAGE_TAKEN_COLUMN))
   end
 
   private
