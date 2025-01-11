@@ -1,7 +1,7 @@
 class BestCalculatorService
   include TimeFilterable
 
-  def self.best_players(time_filter:, timezone:, limit:)
+  def self.best_players(time_filter:, timezone:, limit:, formatted_table:)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
     return [] unless start_time.present?
 
@@ -23,7 +23,6 @@ class BestCalculatorService
       totals[player_id][:total_kills] += stat.kills
       totals[player_id][:total_damage_given] += stat.damage_dealt
 
-      # Calculate game-level average_accuracy
       game_accuracies = stat.weapons.map do |weapon|
         next if weapon.shots.zero?
         weapon.hits.to_f / weapon.shots * 100
@@ -36,19 +35,16 @@ class BestCalculatorService
       end
     end
 
-    calculate_scores(player_totals, limit)
+    scores = calculate_scores(player_totals: player_totals, limit: limit)
+
+    formatted_table ? formatted_table(data: scores, time_filter: time_filter) : scores
   end
 
   private
 
-  def self.calculate_scores(player_totals, limit)
+  def self.calculate_scores(player_totals:, limit:)
     player_totals.values.map do |player_data|
-      average_accuracy = if player_data[:total_games] > 0
-                           (player_data[:total_game_accuracies] / player_data[:total_games]).round
-                         else
-                           0
-                         end
-
+      average_accuracy = player_data[:total_games] > 0 ? (player_data[:total_game_accuracies] / player_data[:total_games]).round : 0
       kills = player_data[:total_kills]
       damage_given = player_data[:total_damage_given]
 
@@ -58,11 +54,17 @@ class BestCalculatorService
         steam_id: player_data[:steam_id],
         player_name: player_data[:player_name],
         average_accuracy: average_accuracy,
-        final_score: final_score,
         total_damage_given: damage_given,
         total_kills: kills,
-        total_games: player_data[:total_games]
+        total_games: player_data[:total_games],
+        final_score: final_score
       }
     end.sort_by { |player| -player[:final_score] }.first(limit)
+  end
+
+  def self.formatted_table(data:, time_filter:)
+    title = "Best Players for the #{time_filter}"
+    headers = %w[player_name average_accuracy total_damage_given total_kills total_games final_score]
+    TabletizeService.new(title: title, data: data, headers: headers).table
   end
 end

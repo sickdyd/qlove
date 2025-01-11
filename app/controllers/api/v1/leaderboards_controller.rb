@@ -2,6 +2,7 @@ class Api::V1::LeaderboardsController < ApplicationController
   before_action :validate_time_filter
   before_action :validate_timezone
   before_action :validate_limit, only: %i[accuracy damage_dealt damage_taken kills deaths wins losses best]
+  before_action :validate_table_format, only: %i[accuracy stats damage_dealt damage_taken kills deaths wins losses best]
   before_action :validate_medals, only: :medals
   before_action :validate_weapons, only: %i[accuracy stats]
   before_action :validate_steam_id, only: :stats
@@ -30,6 +31,11 @@ class Api::V1::LeaderboardsController < ApplicationController
     render json: { data: KillDeathCalculatorService.deaths(**leaderboard_params) }
   end
 
+  # TODO: Implement the kill_death_ratio method
+  def kill_death_ratio
+    render json: { data: KillDeathCalculatorService.kill_death_ratio(**leaderboard_params) }
+  end
+
   def wins
     render json: { data: WinLoseCalculatorService.wins(**leaderboard_params) }
   end
@@ -56,7 +62,8 @@ class Api::V1::LeaderboardsController < ApplicationController
     {
       time_filter: @time_filter,
       timezone: @timezone,
-      limit: @limit || MIN_RESULTS_LIMIT
+      limit: @limit || MIN_RESULTS_LIMIT,
+      formatted_table: @formatted_table
     }
   end
 
@@ -108,10 +115,20 @@ class Api::V1::LeaderboardsController < ApplicationController
 
     unless params[:steam_id].present?
       render json: { error: 'Missing steam_id' }, status: :bad_request
+      return
     end
 
     unless Player.exists?(steam_id: params[:steam_id])
       render json: { error: 'Invalid steam_id' }, status: :bad_request
+      return
+    end
+  end
+
+  def validate_table_format
+    if params.key?(:formatted_table)
+      @formatted_table = params[:formatted_table].blank? ? true : ActiveModel::Type::Boolean.new.cast(params[:formatted_table])
+    else
+      @formatted_table = false
     end
   end
 end

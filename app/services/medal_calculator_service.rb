@@ -21,7 +21,7 @@ class MedalCalculatorService
   ].freeze
 
 
-  def self.medals(time_filter:, timezone:, limit:, medals: ALL_MEDALS)
+  def self.medals(time_filter:, timezone:, limit:, medals: ALL_MEDALS, formatted_table:)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?
@@ -34,21 +34,18 @@ class MedalCalculatorService
       selected_medals = medals.map { |medal| "SUM(medals.#{medal}) as #{medal}" }
       total_column = medals.map { |medal| "SUM(medals.#{medal})" }.join(" + ")
 
-      Rails.logger.info("Selected medals: #{selected_medals}")
-      Rails.logger.info("Total column: #{total_column}")
-
       results = query
-                .select(
-                  'players.name as player_name',
-                  'players.steam_id as steam_id',
-                  "#{total_column} AS total_medals",
-                  *selected_medals
-                )
-                .group('players.id', 'players.name', 'players.steam_id')
-                .order('total_medals DESC')
-                .limit(limit)
+        .select(
+          'players.name as player_name',
+          'players.steam_id as steam_id',
+          "#{total_column} AS total_medals",
+          *selected_medals
+        )
+        .group('players.id', 'players.name', 'players.steam_id')
+        .order('total_medals DESC')
+        .limit(limit)
 
-      results.map do |result|
+      final_results = results.map do |result|
         player_data = {
           steam_id: result.steam_id,
           player_name: result.player_name,
@@ -61,9 +58,19 @@ class MedalCalculatorService
 
         player_data.merge(medals: medal_data)
       end
+
+      return formatted_table ? formatted_table(data: final_results, time_filter: time_filter) : final_results
     rescue ActiveRecord::StatementInvalid => e
       Rails.logger.error("Error in MedalCalculatorService: #{e.message}")
       []
     end
+  end
+
+  private
+
+  def self.formatted_table(data:, time_filter:)
+    title = "Medals for the #{time_filter}"
+    headers = %w[player_name total_kills total_deaths kill_death_ratio]
+    TabletizeService.new(title: title, data: data, headers: headers).table
   end
 end
