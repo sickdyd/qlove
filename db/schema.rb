@@ -69,8 +69,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
   end
 
   create_table "players", force: :cascade do |t|
-    t.string "steam_id"
-    t.string "name"
+    t.string "steam_id", null: false
+    t.string "name", default: "UnnamedPlayer", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["steam_id"], name: "index_players_on_steam_id", unique: true
