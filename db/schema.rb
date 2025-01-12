@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_12_024526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -69,8 +69,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
   end
 
   create_table "players", force: :cascade do |t|
-    t.string "steam_id"
-    t.string "name"
+    t.string "steam_id", null: false
+    t.string "name", default: "UnnamedPlayer", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["steam_id"], name: "index_players_on_steam_id", unique: true
@@ -126,4 +126,84 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_04_061151) do
   add_foreign_key "pickups", "stats"
   add_foreign_key "stats", "players"
   add_foreign_key "weapons", "stats"
+
+  create_view "damage_calculator_days", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER (ORDER BY players.id) AS id,
+      players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.damage_dealt) AS total_damage_dealt,
+      sum(stats.damage_taken) AS total_damage_taken
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('day'::text, now()))
+    GROUP BY players.id, players.name, players.steam_id;
+  SQL
+  add_index "damage_calculator_days", ["player_id"], name: "index_damage_calculator_days_on_player_id", unique: true
+  add_index "damage_calculator_days", ["total_damage_dealt"], name: "index_damage_calculator_days_on_total_damage_dealt"
+  add_index "damage_calculator_days", ["total_damage_taken"], name: "index_damage_calculator_days_on_total_damage_taken"
+
+  create_view "damage_calculator_weeks", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER (ORDER BY players.id) AS id,
+      players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.damage_dealt) AS total_damage_dealt,
+      sum(stats.damage_taken) AS total_damage_taken
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('week'::text, now()))
+    GROUP BY players.id, players.name, players.steam_id;
+  SQL
+  add_index "damage_calculator_weeks", ["player_id"], name: "index_damage_calculator_weeks_on_player_id", unique: true
+  add_index "damage_calculator_weeks", ["total_damage_dealt"], name: "index_damage_calculator_weeks_on_total_damage_dealt"
+  add_index "damage_calculator_weeks", ["total_damage_taken"], name: "index_damage_calculator_weeks_on_total_damage_taken"
+
+  create_view "damage_calculator_months", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER (ORDER BY players.id) AS id,
+      players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.damage_dealt) AS total_damage_dealt,
+      sum(stats.damage_taken) AS total_damage_taken
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('month'::text, now()))
+    GROUP BY players.id, players.name, players.steam_id;
+  SQL
+  add_index "damage_calculator_months", ["player_id"], name: "index_damage_calculator_months_on_player_id", unique: true
+  add_index "damage_calculator_months", ["total_damage_dealt"], name: "index_damage_calculator_months_on_total_damage_dealt"
+  add_index "damage_calculator_months", ["total_damage_taken"], name: "index_damage_calculator_months_on_total_damage_taken"
+
+  create_view "damage_calculator_all_times", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER (ORDER BY players.id) AS id,
+      players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.damage_dealt) AS total_damage_dealt,
+      sum(stats.damage_taken) AS total_damage_taken
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.name, players.steam_id;
+  SQL
+  add_index "damage_calculator_all_times", ["player_id"], name: "index_damage_calculator_all_times_on_player_id", unique: true
+  add_index "damage_calculator_all_times", ["total_damage_dealt"], name: "index_damage_calculator_all_times_on_total_damage_dealt"
+  add_index "damage_calculator_all_times", ["total_damage_taken"], name: "index_damage_calculator_all_times_on_total_damage_taken"
+
+  create_view "damage_calculator_years", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER (ORDER BY players.id) AS id,
+      players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.damage_dealt) AS total_damage_dealt,
+      sum(stats.damage_taken) AS total_damage_taken
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('year'::text, now()))
+    GROUP BY players.id, players.name, players.steam_id;
+  SQL
+  add_index "damage_calculator_years", ["player_id"], name: "index_damage_calculator_years_on_player_id", unique: true
+  add_index "damage_calculator_years", ["total_damage_dealt"], name: "index_damage_calculator_years_on_total_damage_dealt"
+  add_index "damage_calculator_years", ["total_damage_taken"], name: "index_damage_calculator_years_on_total_damage_taken"
+
 end
