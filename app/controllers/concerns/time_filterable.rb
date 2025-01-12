@@ -7,7 +7,8 @@ module TimeFilterable
   TIME_FILTERS = {
     day: 'day',
     week: 'week',
-    month: 'month'
+    month: 'month',
+    year: 'year',
   }.freeze
 
   def self.start_time_for(time_filter:, timezone:)
@@ -22,6 +23,8 @@ module TimeFilterable
       Time.current.in_time_zone(timezone).beginning_of_week
     when TIME_FILTERS[:month]
       Time.current.in_time_zone(timezone).beginning_of_month
+    when TIME_FILTERS[:year]
+      Time.current.in_time_zone(timezone).beginning_of_year
     else
       nil
     end
