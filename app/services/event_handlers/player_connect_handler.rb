@@ -10,7 +10,7 @@ module EventHandlers
       steam_id = event_data.dig('DATA', 'STEAM_ID')
       name = event_data.dig('DATA', 'NAME')
 
-      create_player(steam_id: steam_id, name: name)
+      create_or_update_player(steam_id: steam_id, name: name)
     end
 
     def self.create_or_update_player(steam_id:, name:)
