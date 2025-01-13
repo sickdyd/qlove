@@ -21,7 +21,7 @@ class MedalCalculatorService
   ].freeze
 
 
-  def self.medals(time_filter:, timezone:, limit:, medals: ALL_MEDALS, formatted_table:)
+  def self.medals(time_filter:, timezone:, limit:, medals: ALL_MEDALS, formatted_table:, year:)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?

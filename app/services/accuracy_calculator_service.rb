@@ -41,8 +41,7 @@ class AccuracyCalculatorService
     average_accuracy: 'AVG'
   }
 
-
-  def self.accuracy(time_filter:, timezone:, limit:, steam_id: nil, weapons: ALL_WEAPONS, formatted_table:)
+  def self.calculate_accuracy(time_filter:, timezone:, limit:, formatted_table:, year:, weapons:, steam_id: nil)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?

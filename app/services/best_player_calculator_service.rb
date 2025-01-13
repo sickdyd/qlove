@@ -1,7 +1,7 @@
-class BestCalculatorService
+class BestPlayerCalculatorService
   include TimeFilterable
 
-  def self.best_players(time_filter:, timezone:, limit:, formatted_table:)
+  def self.best_players(time_filter:, timezone:, limit:, formatted_table:, year:)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
     return [] unless start_time.present?
 

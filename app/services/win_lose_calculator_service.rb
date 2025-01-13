@@ -14,7 +14,7 @@ class WinLoseCalculatorService
 
   private
 
-  def self.calculate_win_and_lose(time_filter:, timezone:, limit:, sort_by:, formatted_table:)
+  def self.calculate_win_and_lose(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?

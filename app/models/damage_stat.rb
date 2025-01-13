@@ -19,24 +19,6 @@ class DamageStat < BaseMaterializedView
   scope :for_this_week, -> { for_time_range('week') }
   scope :for_today, -> { for_time_range('day') }
 
-  def self.damage_dealt(params)
-    calculate_damage(**params.merge(sort_by: TOTAL_DAMAGE_DEALT_COLUMN))
-  end
-
-  def self.damage_taken(params)
-    calculate_damage(**params.merge(sort_by: TOTAL_DAMAGE_TAKEN_COLUMN))
-  end
-
-  private
-
-  def self.for_time_range(time_filter)
-    table_name = TIME_FILTER_TO_TABLE[time_filter]
-    raise ArgumentError, "Invalid time filter: #{time_filter}" unless table_name
-
-    self.table_name = table_name
-    self
-  end
-
   def self.calculate_damage(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
     validate_year(time_filter: time_filter, year: year)
 
@@ -55,6 +37,16 @@ class DamageStat < BaseMaterializedView
   rescue ActiveRecord::StatementInvalid => e
     Rails.logger.error("Error in DamageStat: #{e.message}")
     raise
+  end
+
+  private
+
+  def self.for_time_range(time_filter)
+    table_name = TIME_FILTER_TO_TABLE[time_filter]
+    raise ArgumentError, "Invalid time filter: #{time_filter}" unless table_name
+
+    self.table_name = table_name
+    self
   end
 
   def self.format_table(data:, time_filter:, sort_by:)

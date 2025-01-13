@@ -16,7 +16,7 @@ class KillDeathCalculatorService
 
   private
 
-  def self.calculate_kills_and_deaths(time_filter:, timezone:, limit:, formatted_table:, sort_by:)
+  def self.calculate_kills_and_deaths(time_filter:, timezone:, limit:, formatted_table:, year:, sort_by:)
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
     return [] unless start_time.present?

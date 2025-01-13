@@ -7,20 +7,17 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :leaderboards, only: [] do
-        collection do
-          get :accuracy
-          get :damage_dealt
-          get :damage_taken
-          get :kills
-          get :deaths
-          get :medals
-          get :wins
-          get :losses
-          get :best
-          get :stats
-        end
+      namespace :leaderboards do
+        get :accuracy, to: "accuracy#show"
+        get :best_players, to: "best_players#show"
+        get :damage_dealt, to: "damage#damage_dealt"
+        get :damage_taken, to: "damage#damage_taken"
+        get :kills, to: "kills_deaths#kills"
+        get :deaths, to: "kills_deaths#deaths"
+        get :wins, to: "wins_losses#wins"
+        get :losses, to: "wins_losses#losses"
       end
+      get :stats, to: "stats#show"
     end
   end
 
