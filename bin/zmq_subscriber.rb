@@ -13,7 +13,8 @@ ZMQ_PASSWORD = ENV['ZMQ_PASSWORD']&.b
 
 EVENT_HANDLER_MAP = {
   "PLAYER_CONNECT" => EventHandlers::PlayerConnectHandler,
-  "PLAYER_STATS" => EventHandlers::PlayerStatsHandler
+  "PLAYER_STATS" => EventHandlers::PlayerStatsHandler,
+  "MATCH_REPORT" => EventHandlers::RefreshMaterializedViewsHandler
 }.freeze
 
 begin

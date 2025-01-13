@@ -1,8 +1,10 @@
 class Api::V1::LeaderboardsController < ApplicationController
   before_action :validate_time_filter
+  # NOTE: validate timezone must happen before validate year
   before_action :validate_timezone
-  before_action :validate_limit, only: %i[accuracy damage_dealt damage_taken kills deaths wins losses best]
-  before_action :validate_table_format, only: %i[accuracy stats damage_dealt damage_taken kills deaths wins losses best]
+  before_action :validate_limit, except: %i[stats]
+  before_action :validate_table_format, except: %i[stats]
+  before_action :validate_year, only: %i[stats]
   before_action :validate_medals, only: :medals
   before_action :validate_weapons, only: %i[accuracy stats]
   before_action :validate_steam_id, only: :stats
@@ -10,17 +12,18 @@ class Api::V1::LeaderboardsController < ApplicationController
   DEFAULT_RESULTS_LIMIT = 10
   MAX_RESULTS_LIMIT = 100
   MIN_RESULTS_LIMIT = 1
+  EARLIEST_YEAR = 2010
 
   def accuracy
     render json: { data: AccuracyCalculatorService.accuracy(**(leaderboard_params.merge(weapons: @weapons))) }
   end
 
   def damage_dealt
-    render json: { data: DamageCalculatorService.damage_dealt(**leaderboard_params) }
+    render json: { data: DamageStat.damage_dealt(**leaderboard_params) }
   end
 
   def damage_taken
-    render json: { data: DamageCalculatorService.damage_taken(**leaderboard_params) }
+    render json: { data: DamageStat.damage_taken(**leaderboard_params) }
   end
 
   def kills
@@ -63,7 +66,8 @@ class Api::V1::LeaderboardsController < ApplicationController
       time_filter: @time_filter,
       timezone: @timezone,
       limit: @limit || MIN_RESULTS_LIMIT,
-      formatted_table: @formatted_table
+      formatted_table: @formatted_table,
+      year: @year
     }
   end
 
@@ -79,7 +83,7 @@ class Api::V1::LeaderboardsController < ApplicationController
     @timezone = params[:timezone].present? ? params[:timezone] : TimeFilterable::DEFAULT_TIMEZONE
 
     unless TimeFilterable::VALID_TIMEZONES.include?(@timezone)
-      render json: { error: 'Invalid timezone', valid_timezones: TimeFilterable::VALID_TIMEZONES }, status: :bad_request
+      render json: { error: TimeFilterable.invalid_timezone_error_message }, status: :bad_request
     end
   end
 
@@ -129,6 +133,14 @@ class Api::V1::LeaderboardsController < ApplicationController
       @formatted_table = params[:formatted_table].blank? ? true : ActiveModel::Type::Boolean.new.cast(params[:formatted_table])
     else
       @formatted_table = false
+    end
+  end
+
+  def validate_year
+    @year = params[:year] || Time.current.in_time_zone(@timezone).year
+
+    unless @year.present? && @year.to_i.between?(EARLIEST_YEAR, Time.current.in_time_zone(@timezone).year)
+      render json: { error: "Invalid year: the year must be a number between #{EARLIEST_YEAR} and #{Time.current.in_time_zone(@timezone).year}" }, status: :bad_request
     end
   end
 end
