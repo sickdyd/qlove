@@ -2,21 +2,21 @@ class Api::V1::Leaderboards::DamageController < ApplicationController
   include ValidateCommonParams
 
   def damage_dealt
-    render json: { data: DamageStat.calculate_damage(
+    render json: { data: DamageStats.leaderboard(
       **damage_params
         .to_h
         .symbolize_keys
-        .merge(sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN)
+        .merge(sort_by: DamageStats::TOTAL_DAMAGE_DEALT_COLUMN)
       )
     }
   end
 
   def damage_taken
-    render json: { data: DamageStat.calculate_damage(
+    render json: { data: DamageStats.leaderboard(
       **damage_params
         .to_h
         .symbolize_keys
-        .merge(sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN)
+        .merge(sort_by: DamageStats::TOTAL_DAMAGE_TAKEN_COLUMN)
       )
     }
   end

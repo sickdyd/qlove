@@ -1,4 +1,4 @@
-class DamageStat < BaseMaterializedView
+class DamageStats < BaseMaterializedView
   self.primary_key = :player_id
 
   TOTAL_DAMAGE_DEALT_COLUMN = 'total_damage_dealt'.freeze
@@ -19,7 +19,7 @@ class DamageStat < BaseMaterializedView
   scope :for_this_week, -> { for_time_range('week') }
   scope :for_today, -> { for_time_range('day') }
 
-  def self.calculate_damage(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
+  def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
     validate_year(time_filter: time_filter, year: year)
 
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
