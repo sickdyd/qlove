@@ -6,14 +6,15 @@ module EventHandlers
       Rails.logger.debug "Refreshing all materialized views"
 
       TimeFilterable::TIME_FILTERS.each do |time_filter|
-        DamageStat.for_time_range(time_filter).refresh
+        DamageStats.for_time_range(time_filter).refresh
+        KillsDeathsStats.for_time_range(time_filter).refresh
       end
 
       limit = 10
 
       Benchmark.bm do |x|
         x.report("Materialized View:") do
-          DamageStat.for_time_range('all_time')
+          DamageStats.for_time_range('all_time')
             .order(total_damage_dealt: :desc)
             .limit(limit)
             .to_a

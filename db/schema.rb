@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_12_100147) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_13_095437) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -195,5 +195,95 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_12_100147) do
   SQL
   add_index "all_time_damage_stats", ["player_id"], name: "index_all_time_damage_stats_on_player_id", unique: true
   add_index "all_time_damage_stats", ["steam_id"], name: "index_all_time_damage_stats_on_steam_id", unique: true
+
+  create_view "daily_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.kills) AS total_kills,
+      sum(stats.deaths) AS total_deaths,
+          CASE
+              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
+              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
+          END AS kills_deaths_ratio
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('day'::text, now()))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "daily_kills_deaths_stats", ["player_id"], name: "index_daily_kills_deaths_stats_on_player_id", unique: true
+  add_index "daily_kills_deaths_stats", ["steam_id"], name: "index_daily_kills_deaths_stats_on_steam_id", unique: true
+
+  create_view "weekly_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.kills) AS total_kills,
+      sum(stats.deaths) AS total_deaths,
+          CASE
+              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
+              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
+          END AS kills_deaths_ratio
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('week'::text, now()))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "weekly_kills_deaths_stats", ["player_id"], name: "index_weekly_kills_deaths_stats_on_player_id", unique: true
+  add_index "weekly_kills_deaths_stats", ["steam_id"], name: "index_weekly_kills_deaths_stats_on_steam_id", unique: true
+
+  create_view "monthly_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.kills) AS total_kills,
+      sum(stats.deaths) AS total_deaths,
+          CASE
+              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
+              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
+          END AS kills_deaths_ratio
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('month'::text, now()))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "monthly_kills_deaths_stats", ["player_id"], name: "index_monthly_kills_deaths_stats_on_player_id", unique: true
+  add_index "monthly_kills_deaths_stats", ["steam_id"], name: "index_monthly_kills_deaths_stats_on_steam_id", unique: true
+
+  create_view "yearly_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.kills) AS total_kills,
+      sum(stats.deaths) AS total_deaths,
+      (EXTRACT(year FROM stats.created_at))::integer AS year,
+          CASE
+              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
+              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
+          END AS kills_deaths_ratio
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    WHERE (stats.created_at >= date_trunc('day'::text, now()))
+    GROUP BY players.id, players.steam_id, (EXTRACT(year FROM stats.created_at));
+  SQL
+  add_index "yearly_kills_deaths_stats", ["player_id"], name: "index_yearly_kills_deaths_stats_on_player_id", unique: true
+  add_index "yearly_kills_deaths_stats", ["steam_id"], name: "index_yearly_kills_deaths_stats_on_steam_id", unique: true
+
+  create_view "all_time_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(stats.kills) AS total_kills,
+      sum(stats.deaths) AS total_deaths,
+          CASE
+              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
+              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
+          END AS kills_deaths_ratio
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "all_time_kills_deaths_stats", ["player_id"], name: "index_all_time_kills_deaths_stats_on_player_id", unique: true
+  add_index "all_time_kills_deaths_stats", ["steam_id"], name: "index_all_time_kills_deaths_stats_on_steam_id", unique: true
 
 end

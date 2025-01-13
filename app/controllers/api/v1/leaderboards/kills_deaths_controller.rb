@@ -2,16 +2,15 @@ class Api::V1::Leaderboards::KillsDeathsController < ApplicationController
   include ValidateCommonParams
 
   def kills
-    render json: { data: KillDeathCalculatorService.kills(kills_deaths_params.to_h.symbolize_keys) }
+    render json: { data: KillsDeathsStats.kills_and_deaths(**kills_deaths_params.to_h.symbolize_keys.merge(sort_by: KillsDeathsStats::TOTAL_KILLS_COLUMN)) }
   end
 
   def deaths
-    render json: { data: KillDeathCalculatorService.deaths(kills_deaths_params.to_h.symbolize_keys) }
+    render json: { data: KillsDeathsStats.kills_and_deaths(**kills_deaths_params.to_h.symbolize_keys.merge(sort_by: KillsDeathsStats::TOTAL_DEATHS_COLUMN)) }
   end
 
-  # TODO: Implement the kill_death_ratio method
   def kills_deaths_ratio
-    render json: { data: KillDeathCalculatorService.kill_death_ratio(kills_deaths_params.to_h.symbolize_keys) }
+    render json: { data: KillsDeathsStats.kills_and_deaths(**kills_deaths_params.to_h.symbolize_keys.merge(sort_by: KillsDeathsStats::KILL_DEATH_RATIO_COLUMN)) }
   end
 
   private

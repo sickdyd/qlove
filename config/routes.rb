@@ -14,6 +14,7 @@ Rails.application.routes.draw do
         get :damage_taken, to: "damage#damage_taken"
         get :kills, to: "kills_deaths#kills"
         get :deaths, to: "kills_deaths#deaths"
+        get :kills_deaths_ratio, to: "kills_deaths#kills_deaths_ratio"
         get :wins, to: "wins_losses#wins"
         get :losses, to: "wins_losses#losses"
       end
