@@ -35,7 +35,7 @@ module ValidateCommonParams
   def validate_limit
     return if params[:limit].blank?
 
-    unless params[:limit].between?(MIN_RESULTS_LIMIT, MAX_RESULTS_LIMIT)
+    unless params[:limit].to_i.between?(MIN_RESULTS_LIMIT, MAX_RESULTS_LIMIT)
       render json: { error: 'Invalid limit', valid_limits: "#{MIN_RESULTS_LIMIT} to #{MAX_RESULTS_LIMIT}" }, status: :bad_request
     end
   end
