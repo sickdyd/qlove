@@ -1,6 +1,4 @@
-class Api::V1::Leaderboards::DamageController < ApplicationController
-  include ValidateCommonParams
-
+class Api::V1::Leaderboards::DamageController < Api::V1::BaseController
   def damage_dealt
     render json: { data: DamageStats.leaderboard(
       **damage_params
@@ -32,6 +30,6 @@ class Api::V1::Leaderboards::DamageController < ApplicationController
         :formatted_table,
         :year,
       )
-      .with_defaults(CommonParamsDefaults::DEFAULTS)
+      .with_defaults(COMMON_PARAMS_DEFAULTS)
   end
 end

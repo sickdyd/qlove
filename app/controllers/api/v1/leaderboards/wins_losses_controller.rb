@@ -1,6 +1,4 @@
-class Api::V1::Leaderboards::WinsLossesController < ApplicationController
-  include ValidateCommonParams
-
+class Api::V1::Leaderboards::WinsLossesController < Api::V1::BaseController
   def wins
     render json: { data: WinLoseCalculatorService.wins(wins_losses_params.to_h.symbolize_keys) }
   end
@@ -20,6 +18,6 @@ class Api::V1::Leaderboards::WinsLossesController < ApplicationController
         :formatted_table,
         :year,
       )
-      .with_defaults(CommonParamsDefaults::DEFAULTS)
+      .with_defaults(COMMON_PARAMS_DEFAULTS)
   end
 end

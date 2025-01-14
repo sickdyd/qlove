@@ -1,6 +1,4 @@
-class Api::V1::Leaderboards::KillsDeathsController < ApplicationController
-  include ValidateCommonParams
-
+class Api::V1::Leaderboards::KillsDeathsController < Api::V1::BaseController
   def kills
     render json: { data: KillsDeathsStats.kills_and_deaths(**kills_deaths_params.to_h.symbolize_keys.merge(sort_by: KillsDeathsStats::TOTAL_KILLS_COLUMN)) }
   end
@@ -24,6 +22,6 @@ class Api::V1::Leaderboards::KillsDeathsController < ApplicationController
         :formatted_table,
         :year,
       )
-      .with_defaults(CommonParamsDefaults::DEFAULTS)
+      .with_defaults(COMMON_PARAMS_DEFAULTS)
   end
 end

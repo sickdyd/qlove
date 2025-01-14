@@ -8,8 +8,9 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       namespace :leaderboards do
-        get :accuracy, to: "accuracy#show"
+        get :accuracy, to: "accuracy#index"
         get :best_players, to: "best_players#show"
+        get :medals, to: "medals#index"
         get :damage_dealt, to: "damage#damage_dealt"
         get :damage_taken, to: "damage#damage_taken"
         get :kills, to: "kills_deaths#kills"
@@ -18,7 +19,8 @@ Rails.application.routes.draw do
         get :wins, to: "wins_losses#wins"
         get :losses, to: "wins_losses#losses"
       end
-      get :stats, to: "stats#show"
+
+      get :stats, to: "leaderboards/accuracy#show"
     end
   end
 

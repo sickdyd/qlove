@@ -33,7 +33,7 @@ module TimeFilterable
     when 'year'
       Time.current.in_time_zone(timezone).beginning_of_year
     when 'all_time'
-      Time.new(ValidateCommonParams::EARLIEST_YEAR)
+      Time.new(Api::V1::BaseController::EARLIEST_YEAR)
     end
   end
 

@@ -1,18 +1,22 @@
-module ValidateCommonParams
-  extend ActiveSupport::Concern
+class Api::V1::BaseController < ApplicationController
+  before_action :validate_time_filter
+  before_action :validate_timezone
+  before_action :validate_limit
+  before_action :validate_formatted_table
+  before_action :validate_year
 
   DEFAULT_RESULTS_LIMIT = 10
   MAX_RESULTS_LIMIT = 100
   MIN_RESULTS_LIMIT = 1
   EARLIEST_YEAR = 2010
 
-  included do
-    before_action :validate_time_filter
-    before_action :validate_timezone
-    before_action :validate_limit
-    before_action :validate_formatted_table
-    before_action :validate_year
-  end
+  COMMON_PARAMS_DEFAULTS = {
+    time_filter: 'day',
+    timezone: TimeFilterable::DEFAULT_TIMEZONE,
+    limit: DEFAULT_RESULTS_LIMIT,
+    formatted_table: false,
+    year: Time.current.in_time_zone(TimeFilterable::DEFAULT_TIMEZONE).year
+  }
 
   private
 
