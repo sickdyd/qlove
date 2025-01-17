@@ -16,6 +16,11 @@ class BaseMaterializedView < ApplicationRecord
     Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
   end
 
+  def self.for_time_filter(time_filter)
+    # Reconstruct the name of the class based on the time filter, such as DamageStats::DailyDamageStats
+    "#{name}::#{TimeFilterable::TIME_FILTER_TO_ADJECTIVE[time_filter].camelize}#{name}".camelize.constantize
+  end
+
   private
 
   def self.validate_year(time_filter:, year:)
