@@ -1,23 +1,22 @@
 class DamageStats < BaseMaterializedView
+  self.abstract_class = true
+
   TOTAL_DAMAGE_DEALT_COLUMN = 'total_damage_dealt'.freeze
   TOTAL_DAMAGE_TAKEN_COLUMN = 'total_damage_taken'.freeze
   HEADERS = %w[player_name total_damage_dealt total_damage_taken].freeze
 
-  # Dynamically associate the model with the table aligned with the time filter
-  TIME_FILTER_TO_TABLE = {
-    'all_time' => 'all_time_damage_stats',
-    'year' => 'yearly_damage_stats',
-    'month' => 'monthly_damage_stats',
-    'week' => 'weekly_damage_stats',
-    'day' => 'daily_damage_stats'
-  }.freeze
+  def self.for_time_filter(time_filter)
+    time_filter_class = {
+      'all_time' => 'AllTimeDamageStats',
+      'year' => 'YearlyDamageStats',
+      'month' => 'MonthlyDamageStats',
+      'week' => 'WeeklyDamageStats',
+      'day' => 'DailyDamageStats'
+    }[time_filter]
 
-  def self.for_time_range(time_filter)
-    table_name = TIME_FILTER_TO_TABLE[time_filter]
-    raise ArgumentError, "Invalid time filter: #{time_filter}" unless table_name
+    raise ArgumentError, "Invalid time filter: #{time_filter}" unless time_filter_class
 
-    self.table_name = table_name
-    self
+    "DamageStats::#{time_filter_class}".constantize
   end
 
   def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
@@ -25,7 +24,7 @@ class DamageStats < BaseMaterializedView
 
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
-    query = for_time_range(time_filter).order("#{sort_by} DESC").limit(limit)
+    query = order("#{sort_by} DESC").limit(limit)
 
     # Yearly stats can be filtered by year
     if time_filter == 'year'
@@ -35,8 +34,5 @@ class DamageStats < BaseMaterializedView
     data = query.to_a
 
     formatted_table ? format_table(data: data, headers: HEADERS, time_filter: time_filter, sort_by: sort_by) : data
-  rescue ActiveRecord::StatementInvalid => e
-    Rails.logger.error("Error in #{self.class}: #{e.message}")
-    raise
   end
 end

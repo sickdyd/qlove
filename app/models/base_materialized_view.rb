@@ -8,7 +8,7 @@ class BaseMaterializedView < ApplicationRecord
   scope :for_this_week, -> { for_time_range('week') }
   scope :for_today, -> { for_time_range('day') }
 
-  def readonly?
+  def self.readonly?
     true
   end
 
@@ -16,11 +16,17 @@ class BaseMaterializedView < ApplicationRecord
     Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
   end
 
+  private
+
   def self.validate_year(time_filter:, year:)
     return if time_filter != 'year'
     return if year.present? && year.to_i.positive?
 
     raise ArgumentError, 'Year must be a positive integer'
+  end
+
+  def self.start_time(time_filter:, timezone:)
+    TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
   end
 
   def self.to_table(data:, headers:, time_filter:, sort_by:)
