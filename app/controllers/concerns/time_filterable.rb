@@ -6,12 +6,12 @@ module TimeFilterable
 
   TIME_FILTERS = %w[day week month year all_time].freeze
 
-  TIME_FILTER_TO_TABLE_SUFFIX = {
-    'day' => 'days',
-    'week' => 'weeks',
-    'month' => 'months',
-    'year' => 'years',
-    'all_time' => 'all_times'
+  TIME_FILTER_TO_ADJECTIVE ={
+    "day" => "daily",
+    "month" => "monthly",
+    "year" => "yearly",
+    "week" => "weekly",
+    "hour" => "hourly"
   }
 
   def self.start_time_for(time_filter:, timezone:)
