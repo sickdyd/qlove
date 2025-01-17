@@ -6,17 +6,17 @@ class DamageStats < BaseMaterializedView
   HEADERS = %w[player_name total_damage_dealt total_damage_taken].freeze
 
   def self.for_time_filter(time_filter)
-    time_filter_class = {
-      'all_time' => 'AllTimeDamageStats',
-      'year' => 'YearlyDamageStats',
-      'month' => 'MonthlyDamageStats',
-      'week' => 'WeeklyDamageStats',
-      'day' => 'DailyDamageStats'
+    time_filter_class ={
+      'all_time' => DamageStats::AllTimeDamageStats,
+      'year' => DamageStats::YearlyDamageStats,
+      'month' => DamageStats::MonthlyDamageStats,
+      'week' => DamageStats::WeeklyDamageStats,
+      'day' => DamageStats::DailyDamageStats
     }[time_filter]
 
     raise ArgumentError, "Invalid time filter: #{time_filter}" unless time_filter_class
 
-    "DamageStats::#{time_filter_class}".constantize
+    time_filter_class
   end
 
   def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
