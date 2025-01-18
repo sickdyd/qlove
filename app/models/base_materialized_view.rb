@@ -2,12 +2,6 @@ class BaseMaterializedView < ApplicationRecord
   self.abstract_class = true
   self.primary_key = :player_id
 
-  scope :for_year, ->(year) { for_time_range('year').where(year: year) }
-  scope :for_all_time, -> { for_time_range('all_time') }
-  scope :for_this_month, -> { for_time_range('month') }
-  scope :for_this_week, -> { for_time_range('week') }
-  scope :for_today, -> { for_time_range('day') }
-
   def self.readonly?
     true
   end
