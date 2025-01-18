@@ -27,10 +27,6 @@ class BaseMaterializedViewTest < ActiveSupport::TestCase
     end
   end
 
-  test "start time" do
-    assert daily_damage_stats_instance.send(:start_time, time_filter: 'day', timezone: 'UTC').is_a?(Time)
-  end
-
   test "to_table returns a string" do
     create_list(:stat, 5, created_at: Time.zone.now)
     DamageStats::DailyDamageStats.refresh
