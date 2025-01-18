@@ -2,11 +2,11 @@ class Api::V1::Leaderboards::DamageController < Api::V1::BaseController
   before_action :set_model
 
   def damage_dealt
-    render_leaderboard(sort_by: DamageStats::TOTAL_DAMAGE_DEALT_COLUMN)
+    render_leaderboard(sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN)
   end
 
   def damage_taken
-    render_leaderboard(sort_by: DamageStats::TOTAL_DAMAGE_TAKEN_COLUMN)
+    render_leaderboard(sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN)
   end
 
   private
@@ -29,6 +29,6 @@ class Api::V1::Leaderboards::DamageController < Api::V1::BaseController
   end
 
   def set_model
-    @model = DamageStats.model_for_time_filter(damage_params[:time_filter])
+    @model = DamageStat.model_for_time_filter(damage_params[:time_filter])
   end
 end

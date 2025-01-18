@@ -11,7 +11,7 @@ class BaseMaterializedView < ApplicationRecord
   end
 
   def self.model_for_time_filter(time_filter)
-    # Reconstruct the name of the class based on the time filter, such as DamageStats::DailyDamageStats
+    # Reconstruct the name of the class based on the time filter, such as DamageStat::DailyDamageStat
     "#{name}::#{TimeFilterable::TIME_FILTER_TO_ADJECTIVE[time_filter].camelize}#{name}".constantize
   end
 

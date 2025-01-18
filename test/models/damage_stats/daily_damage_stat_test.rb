@@ -1,6 +1,6 @@
 require "test_helper"
 
-class DailyDamageStatsTest < ActiveSupport::TestCase
+class DailyDamageStatTest < ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
 
   setup do
@@ -9,19 +9,19 @@ class DailyDamageStatsTest < ActiveSupport::TestCase
     create(:stat, damage_taken: 130000)
     @old_stats = create_list(:stat, 2, created_at: Time.zone.now - 2.days)
 
-    DamageStats::DailyDamageStats.refresh
+    DamageStat::DailyDamageStat.refresh
   end
 
   test "model_for_time_filter returns the correct class" do
-    assert_equal DamageStats::DailyDamageStats, DamageStats.model_for_time_filter("day")
+    assert_equal DamageStat::DailyDamageStat, DamageStat.model_for_time_filter("day")
   end
 
   test "leaderboard returns today's stats sorted by total_damage_dealt" do
-    results = DamageStats::DailyDamageStats.leaderboard(
+    results = DamageStat::DailyDamageStat.leaderboard(
       time_filter: "day",
       timezone: "UTC",
       limit: 5,
-      sort_by: DamageStats::TOTAL_DAMAGE_DEALT_COLUMN,
+      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
       formatted_table: false,
       year: nil
     )
@@ -31,11 +31,11 @@ class DailyDamageStatsTest < ActiveSupport::TestCase
   end
 
   test "leaderboard returns today's stats sorted by total_damage_taken" do
-    results = DamageStats::DailyDamageStats.leaderboard(
+    results = DamageStat::DailyDamageStat.leaderboard(
       time_filter: "day",
       timezone: "UTC",
       limit: 5,
-      sort_by: DamageStats::TOTAL_DAMAGE_TAKEN_COLUMN,
+      sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN,
       formatted_table: false,
       year: nil
     )
@@ -45,11 +45,11 @@ class DailyDamageStatsTest < ActiveSupport::TestCase
   end
 
   test "leaderboard does not include stats from other days" do
-    results = DamageStats::DailyDamageStats.leaderboard(
+    results = DamageStat::DailyDamageStat.leaderboard(
       time_filter: "day",
       timezone: "UTC",
       limit: 10,
-      sort_by: DamageStats::TOTAL_DAMAGE_DEALT_COLUMN,
+      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
       formatted_table: false,
       year: nil
     )
