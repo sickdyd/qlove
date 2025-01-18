@@ -16,7 +16,7 @@ class BaseMaterializedView < ApplicationRecord
     Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
   end
 
-  def self.for_time_filter(time_filter)
+  def self.model_for_time_filter(time_filter)
     # Reconstruct the name of the class based on the time filter, such as DamageStats::DailyDamageStats
     "#{name}::#{TimeFilterable::TIME_FILTER_TO_ADJECTIVE[time_filter].camelize}#{name}".camelize.constantize
   end
@@ -25,18 +25,21 @@ class BaseMaterializedView < ApplicationRecord
   def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
     validate_year(time_filter: time_filter, year: year)
 
-    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
+    query = all
 
-    query = order("#{sort_by} DESC").limit(limit)
+    # Only the yearly tables have the year column
+    query = query.where(year: year) if time_filter == 'year'
 
-    # Yearly stats can be filtered by year
-    if time_filter == 'year'
-      query = query.where(year: year)
+    data = query
+      .order("#{sort_by} DESC")
+      .limit(limit)
+
+    if formatted_table
+      headers = model_for_time_filter(time_filter)::HEADERS
+      return to_table(data: data, headers: headers, time_filter: time_filter, sort_by: sort_by)
     end
 
-    data = query.to_a
-
-    formatted_table ? format_table(data: data, headers: HEADERS, time_filter: time_filter, sort_by: sort_by) : data
+    data
   end
 
   private
@@ -46,10 +49,6 @@ class BaseMaterializedView < ApplicationRecord
     return if year.present? && year.to_i.positive?
 
     raise ArgumentError, 'Year must be a positive integer'
-  end
-
-  def self.start_time(time_filter:, timezone:)
-    TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
   end
 
   def self.to_table(data:, headers:, time_filter:, sort_by:)

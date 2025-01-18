@@ -12,8 +12,8 @@ class DailyDamageStatsTest < ActiveSupport::TestCase
     DamageStats::DailyDamageStats.refresh
   end
 
-  test "for_time_filter returns the correct class" do
-    assert_equal DamageStats::DailyDamageStats, DamageStats.for_time_filter("day")
+  test "model_for_time_filter returns the correct class" do
+    assert_equal DamageStats::DailyDamageStats, DamageStats.model_for_time_filter("day")
   end
 
   test "leaderboard returns today's stats sorted by total_damage_dealt" do

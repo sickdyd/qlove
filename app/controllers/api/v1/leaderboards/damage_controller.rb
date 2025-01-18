@@ -29,6 +29,6 @@ class Api::V1::Leaderboards::DamageController < Api::V1::BaseController
   end
 
   def set_model
-    @model = DamageStats.for_time_filter(damage_params[:time_filter])
+    @model = DamageStats.model_for_time_filter(damage_params[:time_filter])
   end
 end

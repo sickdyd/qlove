@@ -29,6 +29,6 @@ class Api::V1::Leaderboards::WinsLossesController < Api::V1::BaseController
   end
 
   def set_model
-    @model = WinsLossesStats.for_time_filter(wins_losses_params[:time_filter])
+    @model = WinsLossesStats.model_for_time_filter(wins_losses_params[:time_filter])
   end
 end

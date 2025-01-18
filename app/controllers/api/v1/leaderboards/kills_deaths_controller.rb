@@ -33,6 +33,6 @@ class Api::V1::Leaderboards::KillsDeathsController < Api::V1::BaseController
   end
 
   def set_model
-    @model = KillsDeathsStats.for_time_filter(kills_deaths_params[:time_filter])
+    @model = KillsDeathsStats.model_for_time_filter(kills_deaths_params[:time_filter])
   end
 end
