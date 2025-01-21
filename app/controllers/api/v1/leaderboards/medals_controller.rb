@@ -20,15 +20,15 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
       )
       .with_defaults(
         COMMON_PARAMS_DEFAULTS
-          .merge(medals: MedalCalculatorService::ALL_MEDALS.join(',')),
+          .merge(medals: MedalsStat::ALL_MEDALS.join(',')),
       )
   end
 
   def validate_medals
     return if medals_params[:medals].blank?
 
-    unless (medals_params[:medals].to_s.split(',') - MedalCalculatorService::ALL_MEDALS).empty?
-      render json: { error: 'Invalid medals', valid_medals: MedalCalculatorService::ALL_MEDALS }, status: :bad_request
+    unless (medals_params[:medals].to_s.split(',') - MedalsStat::ALL_MEDALS).empty?
+      render json: { error: 'Invalid medals', valid_medals: MedalsStat::ALL_MEDALS }, status: :bad_request
     end
   end
 
