@@ -11,7 +11,8 @@ module TimeFilterable
     "month" => "monthly",
     "year" => "yearly",
     "week" => "weekly",
-    "hour" => "hourly"
+    "hour" => "hourly",
+    "all_time" => "all_time"
   }
 
   def self.start_time_for(time_filter:, timezone:)
