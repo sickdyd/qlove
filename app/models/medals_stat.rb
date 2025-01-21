@@ -20,7 +20,7 @@ class MedalsStat < BaseMaterializedView
     revenge
   ].freeze
 
-  TOTAL_MEDALS_COLUMN = 'accuracy'.freeze
+  TOTAL_MEDALS_COLUMN = 'total_medals'.freeze
   HEADERS = %w[player_name total_medals].concat(ALL_MEDALS).freeze
 
   def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year: nil, medals: ALL_MEDALS)
