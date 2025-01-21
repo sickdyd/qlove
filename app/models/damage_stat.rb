@@ -24,7 +24,4 @@ class DamageStat < BaseMaterializedView
       end
     end
   end
-
-  class CustomDamageStat < DamageStat
-  end
 end

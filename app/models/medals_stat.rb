@@ -61,7 +61,4 @@ class MedalsStat < BaseMaterializedView
       end
     end
   end
-
-  class CustomMedalsStat < MedalsStat
-  end
 end

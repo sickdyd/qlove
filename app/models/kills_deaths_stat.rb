@@ -25,7 +25,4 @@ class KillsDeathsStat < BaseMaterializedView
       end
     end
   end
-
-  class CustomKillsDeathsStat < KillsDeathsStat
-  end
 end

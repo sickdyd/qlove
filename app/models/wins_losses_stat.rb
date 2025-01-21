@@ -24,7 +24,4 @@ class WinsLossesStat < BaseMaterializedView
       end
     end
   end
-
-  class CustomWinsLossesStat < WinsLossesStat
-  end
 end
