@@ -19,6 +19,11 @@ class KillsDeathsStat < BaseMaterializedView
   end
 
   class YearlyKillsDeathsStat < KillsDeathsStat
+    def self.leaderboard(params)
+      super(**params) do |query|
+        query.where(year: params[:year])
+      end
+    end
   end
 
   class CustomKillsDeathsStat < KillsDeathsStat

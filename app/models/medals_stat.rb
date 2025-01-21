@@ -24,6 +24,7 @@ class MedalsStat < BaseMaterializedView
   HEADERS = %w[player_name total_medals].concat(ALL_MEDALS).freeze
 
   def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year: nil, medals: ALL_MEDALS)
+    # The headers differs based on the medals requested, so we dynamically define the headers
     self.const_set(:HEADERS, %w[player_name total_medals] + medals.map(&:to_s))
 
     columns = %i[player_name steam_id] + medals.map(&:to_sym)
@@ -54,9 +55,9 @@ class MedalsStat < BaseMaterializedView
   end
 
   class YearlyMedalsStat < MedalsStat
-    def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year: nil, medals: nil)
-      super do |query|
-        query.where(year: year)
+    def self.leaderboard(params)
+      super(**params) do |query|
+        query.where(year: params[:year])
       end
     end
   end

@@ -18,6 +18,11 @@ class DamageStat < BaseMaterializedView
   end
 
   class YearlyDamageStat < DamageStat
+    def self.leaderboard(params)
+      super(**params) do |query|
+        query.where(year: params[:year])
+      end
+    end
   end
 
   class CustomDamageStat < DamageStat
