@@ -36,8 +36,6 @@ class MedalsStat < BaseMaterializedView
       query
         .select(columns)
         .select("#{total_medals_expr} AS total_medals")
-        .order("#{sort_by} DESC")
-        .limit(limit)
     end
   end
 
