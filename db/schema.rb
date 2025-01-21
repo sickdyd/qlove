@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_17_123610) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -354,5 +354,150 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_17_123610) do
   SQL
   add_index "all_time_wins_losses_stats", ["player_id"], name: "index_all_time_wins_losses_stats_on_player_id", unique: true
   add_index "all_time_wins_losses_stats", ["steam_id"], name: "index_all_time_wins_losses_stats_on_steam_id", unique: true
+
+  create_view "all_time_medals_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(medals.accuracy) AS accuracy,
+      sum(medals.assists) AS assists,
+      sum(medals.captures) AS captures,
+      sum(medals.combokill) AS combokill,
+      sum(medals.defends) AS defends,
+      sum(medals.excellent) AS excellent,
+      sum(medals.firstfrag) AS firstfrag,
+      sum(medals.headshot) AS headshot,
+      sum(medals.humiliation) AS humiliation,
+      sum(medals.impressive) AS impressive,
+      sum(medals.midair) AS midair,
+      sum(medals.perfect) AS perfect,
+      sum(medals.perforated) AS perforated,
+      sum(medals.quadgod) AS quadgod,
+      sum(medals.rampage) AS rampage,
+      sum(medals.revenge) AS revenge
+     FROM ((stats
+       JOIN players ON ((players.id = stats.player_id)))
+       JOIN medals ON ((stats.id = medals.stat_id)))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "all_time_medals_stats", ["player_id"], name: "index_all_time_medals_stats_on_player_id", unique: true
+  add_index "all_time_medals_stats", ["steam_id"], name: "index_all_time_medals_stats_on_steam_id", unique: true
+
+  create_view "yearly_medals_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(medals.accuracy) AS accuracy,
+      sum(medals.assists) AS assists,
+      sum(medals.captures) AS captures,
+      sum(medals.combokill) AS combokill,
+      sum(medals.defends) AS defends,
+      sum(medals.excellent) AS excellent,
+      sum(medals.firstfrag) AS firstfrag,
+      sum(medals.headshot) AS headshot,
+      sum(medals.humiliation) AS humiliation,
+      sum(medals.impressive) AS impressive,
+      sum(medals.midair) AS midair,
+      sum(medals.perfect) AS perfect,
+      sum(medals.perforated) AS perforated,
+      sum(medals.quadgod) AS quadgod,
+      sum(medals.rampage) AS rampage,
+      sum(medals.revenge) AS revenge,
+      (EXTRACT(year FROM stats.created_at))::integer AS year
+     FROM ((stats
+       JOIN players ON ((players.id = stats.player_id)))
+       JOIN medals ON ((stats.id = medals.stat_id)))
+    WHERE (stats.created_at >= date_trunc('year'::text, now()))
+    GROUP BY players.id, players.steam_id, (EXTRACT(year FROM stats.created_at));
+  SQL
+  add_index "yearly_medals_stats", ["player_id"], name: "index_yearly_medals_stats_on_player_id", unique: true
+  add_index "yearly_medals_stats", ["steam_id"], name: "index_yearly_medals_stats_on_steam_id", unique: true
+
+  create_view "monthly_medals_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(medals.accuracy) AS accuracy,
+      sum(medals.assists) AS assists,
+      sum(medals.captures) AS captures,
+      sum(medals.combokill) AS combokill,
+      sum(medals.defends) AS defends,
+      sum(medals.excellent) AS excellent,
+      sum(medals.firstfrag) AS firstfrag,
+      sum(medals.headshot) AS headshot,
+      sum(medals.humiliation) AS humiliation,
+      sum(medals.impressive) AS impressive,
+      sum(medals.midair) AS midair,
+      sum(medals.perfect) AS perfect,
+      sum(medals.perforated) AS perforated,
+      sum(medals.quadgod) AS quadgod,
+      sum(medals.rampage) AS rampage,
+      sum(medals.revenge) AS revenge
+     FROM ((stats
+       JOIN players ON ((players.id = stats.player_id)))
+       JOIN medals ON ((stats.id = medals.stat_id)))
+    WHERE (stats.created_at >= date_trunc('month'::text, now()))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "monthly_medals_stats", ["player_id"], name: "index_monthly_medals_stats_on_player_id", unique: true
+  add_index "monthly_medals_stats", ["steam_id"], name: "index_monthly_medals_stats_on_steam_id", unique: true
+
+  create_view "weekly_medals_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(medals.accuracy) AS accuracy,
+      sum(medals.assists) AS assists,
+      sum(medals.captures) AS captures,
+      sum(medals.combokill) AS combokill,
+      sum(medals.defends) AS defends,
+      sum(medals.excellent) AS excellent,
+      sum(medals.firstfrag) AS firstfrag,
+      sum(medals.headshot) AS headshot,
+      sum(medals.humiliation) AS humiliation,
+      sum(medals.impressive) AS impressive,
+      sum(medals.midair) AS midair,
+      sum(medals.perfect) AS perfect,
+      sum(medals.perforated) AS perforated,
+      sum(medals.quadgod) AS quadgod,
+      sum(medals.rampage) AS rampage,
+      sum(medals.revenge) AS revenge
+     FROM ((stats
+       JOIN players ON ((players.id = stats.player_id)))
+       JOIN medals ON ((stats.id = medals.stat_id)))
+    WHERE (stats.created_at >= date_trunc('week'::text, now()))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "weekly_medals_stats", ["player_id"], name: "index_weekly_medals_stats_on_player_id", unique: true
+  add_index "weekly_medals_stats", ["steam_id"], name: "index_weekly_medals_stats_on_steam_id", unique: true
+
+  create_view "daily_medals_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      sum(medals.accuracy) AS accuracy,
+      sum(medals.assists) AS assists,
+      sum(medals.captures) AS captures,
+      sum(medals.combokill) AS combokill,
+      sum(medals.defends) AS defends,
+      sum(medals.excellent) AS excellent,
+      sum(medals.firstfrag) AS firstfrag,
+      sum(medals.headshot) AS headshot,
+      sum(medals.humiliation) AS humiliation,
+      sum(medals.impressive) AS impressive,
+      sum(medals.midair) AS midair,
+      sum(medals.perfect) AS perfect,
+      sum(medals.perforated) AS perforated,
+      sum(medals.quadgod) AS quadgod,
+      sum(medals.rampage) AS rampage,
+      sum(medals.revenge) AS revenge
+     FROM ((stats
+       JOIN players ON ((players.id = stats.player_id)))
+       JOIN medals ON ((stats.id = medals.stat_id)))
+    WHERE (stats.created_at >= date_trunc('day'::text, now()))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "daily_medals_stats", ["player_id"], name: "index_daily_medals_stats_on_player_id", unique: true
+  add_index "daily_medals_stats", ["steam_id"], name: "index_daily_medals_stats_on_steam_id", unique: true
 
 end

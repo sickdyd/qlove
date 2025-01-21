@@ -1,8 +1,9 @@
 class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
   before_action :validate_medals
+  before_action :set_model
 
   def index
-    render json: { data: MedalCalculatorService.medals(medals_params.to_h.symbolize_keys) }
+    render_leaderboard(sort_by: MedalsStat::TOTAL_MEDALS_COLUMN)
   end
 
   private
@@ -19,16 +20,25 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
       )
       .with_defaults(
         COMMON_PARAMS_DEFAULTS
-          .merge(medals: MedalCalculatorService::ALL_MEDALS)
+          .merge(medals: MedalCalculatorService::ALL_MEDALS.join(',')),
       )
   end
 
   def validate_medals
-    return if params[:medals].blank?
+    return if medals_params[:medals].blank?
 
-    invalid_medals = params[:medals] - MedalCalculatorService::ALL_MEDALS
-    if invalid_medals.any?
+    unless (medals_params[:medals].to_s.split(',') - MedalCalculatorService::ALL_MEDALS).empty?
       render json: { error: 'Invalid medals', valid_medals: MedalCalculatorService::ALL_MEDALS }, status: :bad_request
     end
+  end
+
+  def render_leaderboard(sort_by:)
+    medals = medals_params[:medals].split(',')
+    data = @model.leaderboard(**medals_params.to_h.symbolize_keys.merge(sort_by: sort_by, medals: medals))
+    render json: { data: data }
+  end
+
+  def set_model
+    @model = MedalsStat.model_for_time_filter(medals_params[:time_filter])
   end
 end

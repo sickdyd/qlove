@@ -15,14 +15,14 @@ class BaseMaterializedView < ApplicationRecord
     "#{name}::#{TimeFilterable::TIME_FILTER_TO_ADJECTIVE[time_filter].camelize}#{name}".constantize
   end
 
-  # This method is always called from the derived class
-  def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year:)
+  def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year: nil, medals: nil)
     validate_year(time_filter: time_filter, year: year)
 
     query = all
 
-    # Only the yearly tables have the year column
-    query = query.where(year: year) if time_filter == 'year'
+    # Call the block to allow the derived class to modify the query
+    # This is used for medals and weapons filtering
+    query = yield(query) if block_given?
 
     data = query
       .order("#{sort_by} DESC")
