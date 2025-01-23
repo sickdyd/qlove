@@ -21,6 +21,7 @@ class MedalsStat < BaseMaterializedView
   ].freeze
 
   TOTAL_MEDALS_COLUMN = 'total_medals'.freeze
+
   HEADERS = %w[player_name total_medals].concat(ALL_MEDALS).freeze
 
   def self.leaderboard(params)
