@@ -1,6 +1,5 @@
 class BaseMaterializedView < ApplicationRecord
   self.abstract_class = true
-  self.primary_key = :player_id
 
   def self.readonly?
     true
@@ -15,8 +14,9 @@ class BaseMaterializedView < ApplicationRecord
     "#{name}::#{TimeFilterable::TIME_FILTER_TO_ADJECTIVE[time_filter].camelize}#{name}".constantize
   end
 
-  def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, year: nil, medals: nil)
-    validate_year(time_filter: time_filter, year: year)
+  def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, medals: nil)
+    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
+    end_time = Time.current.in_time_zone(timezone)
 
     query = all
 
@@ -25,6 +25,7 @@ class BaseMaterializedView < ApplicationRecord
     query = yield(query) if block_given?
 
     data = query
+      .where(created_at: start_time..end_time)
       .order("#{sort_by} DESC")
       .limit(limit)
 
@@ -37,13 +38,6 @@ class BaseMaterializedView < ApplicationRecord
   end
 
   private
-
-  def self.validate_year(time_filter:, year:)
-    return if time_filter != 'year'
-    return if year.present? && year.to_i.positive?
-
-    raise ArgumentError, 'Year must be a positive integer'
-  end
 
   def self.to_table(data:, headers:, time_filter:, sort_by:)
     title = "#{sort_by.titleize} for the #{time_filter}"

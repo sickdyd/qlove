@@ -5,17 +5,16 @@ module EventHandlers
     def self.handle(data)
       Rails.logger.debug "Refreshing all materialized views"
 
-      TimeFilterable::TIME_FILTERS.each do |time_filter|
-        DamageStat.for_time_range(time_filter).refresh
-        KillsDeathsStat.for_time_range(time_filter).refresh
-      end
+      DamageStat.refresh
+      KillsDeathsStat.refresh
+      WinsLossesStat.refresh
+      MedalsStat.refresh
 
       limit = 10
 
       Benchmark.bm do |x|
         x.report("Materialized View:") do
-          DamageStat.for_time_range('all_time')
-            .order(total_damage_dealt: :desc)
+          DamageStat.order(total_damage_dealt: :desc)
             .limit(limit)
             .to_a
         end
