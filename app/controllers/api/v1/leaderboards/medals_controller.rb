@@ -1,6 +1,5 @@
 class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
   before_action :validate_medals
-  before_action :set_model
 
   def index
     render_leaderboard(sort_by: MedalsStat::TOTAL_MEDALS_COLUMN)
@@ -15,7 +14,6 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
         :timezone,
         :limit,
         :formatted_table,
-        :year,
         :medals,
       )
       .with_defaults(
@@ -34,11 +32,7 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
 
   def render_leaderboard(sort_by:)
     medals = medals_params[:medals].split(',')
-    data = @model.leaderboard(**medals_params.to_h.symbolize_keys.merge(sort_by: sort_by, medals: medals))
+    data = MedalsStat.leaderboard(**medals_params.to_h.symbolize_keys.merge(sort_by: sort_by, medals: medals))
     render json: { data: data }
-  end
-
-  def set_model
-    @model = MedalsStat.model_for_time_filter(medals_params[:time_filter])
   end
 end

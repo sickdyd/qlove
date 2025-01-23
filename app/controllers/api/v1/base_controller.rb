@@ -3,7 +3,6 @@ class Api::V1::BaseController < ApplicationController
   before_action :validate_timezone
   before_action :validate_limit
   before_action :validate_formatted_table
-  before_action :validate_year
 
   DEFAULT_RESULTS_LIMIT = 10
   MAX_RESULTS_LIMIT = 100
@@ -11,11 +10,10 @@ class Api::V1::BaseController < ApplicationController
   EARLIEST_YEAR = 2010
 
   COMMON_PARAMS_DEFAULTS = {
-    time_filter: 'day',
+    time_filter: 'all_time',
     timezone: TimeFilterable::DEFAULT_TIMEZONE,
     limit: DEFAULT_RESULTS_LIMIT,
     formatted_table: false,
-    year: Time.current.in_time_zone(TimeFilterable::DEFAULT_TIMEZONE).year
   }
 
   private
@@ -49,14 +47,6 @@ class Api::V1::BaseController < ApplicationController
 
     unless ['true', 'false'].include?(params[:formatted_table])
       render json: { error: 'Invalid formatted_table', valid_values: "true, false" }, status: :bad_request
-    end
-  end
-
-  def validate_year
-    return if params[:year].blank?
-
-    unless params[:year].to_i.between?(EARLIEST_YEAR, Time.current.in_time_zone(params[:timezone]).year)
-      render json: { error: "Invalid year: the year must be a number between #{EARLIEST_YEAR} and #{Time.current.in_time_zone(params[:timezone]).year}" }, status: :bad_request
     end
   end
 end

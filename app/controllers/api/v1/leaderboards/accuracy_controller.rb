@@ -20,7 +20,6 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
         :timezone,
         :limit,
         :formatted_table,
-        :year,
         :weapons,
         :steam_id,
       )

@@ -12,7 +12,6 @@ class Api::V1::Leaderboards::BestPlayersController < Api::V1::BaseController
         :timezone,
         :limit,
         :formatted_table,
-        :year,
       )
       .with_defaults(COMMON_PARAMS_DEFAULTS)
   end

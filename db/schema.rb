@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_18_022342) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -127,63 +127,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
   add_foreign_key "stats", "players"
   add_foreign_key "weapons", "stats"
 
-  create_view "daily_damage_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.damage_dealt) AS total_damage_dealt,
-      sum(stats.damage_taken) AS total_damage_taken
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('day'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "daily_damage_stats", ["player_id"], name: "index_daily_damage_stats_on_player_id", unique: true
-  add_index "daily_damage_stats", ["steam_id"], name: "index_daily_damage_stats_on_steam_id", unique: true
-
-  create_view "weekly_damage_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.damage_dealt) AS total_damage_dealt,
-      sum(stats.damage_taken) AS total_damage_taken
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('week'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "weekly_damage_stats", ["player_id"], name: "index_weekly_damage_stats_on_player_id", unique: true
-  add_index "weekly_damage_stats", ["steam_id"], name: "index_weekly_damage_stats_on_steam_id", unique: true
-
-  create_view "monthly_damage_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.damage_dealt) AS total_damage_dealt,
-      sum(stats.damage_taken) AS total_damage_taken
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('month'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "monthly_damage_stats", ["player_id"], name: "index_monthly_damage_stats_on_player_id", unique: true
-  add_index "monthly_damage_stats", ["steam_id"], name: "index_monthly_damage_stats_on_steam_id", unique: true
-
-  create_view "yearly_damage_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.damage_dealt) AS total_damage_dealt,
-      sum(stats.damage_taken) AS total_damage_taken,
-      (EXTRACT(year FROM stats.created_at))::integer AS year
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    GROUP BY players.id, players.steam_id, (EXTRACT(year FROM stats.created_at));
-  SQL
-  add_index "yearly_damage_stats", ["player_id", "year"], name: "index_yearly_damage_stats_on_player_id_and_year", unique: true
-  add_index "yearly_damage_stats", ["steam_id", "year"], name: "index_yearly_damage_stats_on_steam_id_and_year", unique: true
-
-  create_view "all_time_damage_stats", materialized: true, sql_definition: <<-SQL
+  create_view "damage_stats", materialized: true, sql_definition: <<-SQL
       SELECT players.id AS player_id,
       players.name AS player_name,
       players.steam_id,
@@ -193,83 +137,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
        JOIN players ON ((players.id = stats.player_id)))
     GROUP BY players.id, players.steam_id;
   SQL
-  add_index "all_time_damage_stats", ["player_id"], name: "index_all_time_damage_stats_on_player_id", unique: true
-  add_index "all_time_damage_stats", ["steam_id"], name: "index_all_time_damage_stats_on_steam_id", unique: true
+  add_index "damage_stats", ["player_id"], name: "index_damage_stats_on_player_id", unique: true
+  add_index "damage_stats", ["steam_id"], name: "index_damage_stats_on_steam_id", unique: true
 
-  create_view "daily_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.kills) AS total_kills,
-      sum(stats.deaths) AS total_deaths,
-          CASE
-              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
-              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
-          END AS kills_deaths_ratio
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('day'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "daily_kills_deaths_stats", ["player_id"], name: "index_daily_kills_deaths_stats_on_player_id", unique: true
-  add_index "daily_kills_deaths_stats", ["steam_id"], name: "index_daily_kills_deaths_stats_on_steam_id", unique: true
-
-  create_view "weekly_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.kills) AS total_kills,
-      sum(stats.deaths) AS total_deaths,
-          CASE
-              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
-              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
-          END AS kills_deaths_ratio
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('week'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "weekly_kills_deaths_stats", ["player_id"], name: "index_weekly_kills_deaths_stats_on_player_id", unique: true
-  add_index "weekly_kills_deaths_stats", ["steam_id"], name: "index_weekly_kills_deaths_stats_on_steam_id", unique: true
-
-  create_view "monthly_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.kills) AS total_kills,
-      sum(stats.deaths) AS total_deaths,
-          CASE
-              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
-              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
-          END AS kills_deaths_ratio
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('month'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "monthly_kills_deaths_stats", ["player_id"], name: "index_monthly_kills_deaths_stats_on_player_id", unique: true
-  add_index "monthly_kills_deaths_stats", ["steam_id"], name: "index_monthly_kills_deaths_stats_on_steam_id", unique: true
-
-  create_view "yearly_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.kills) AS total_kills,
-      sum(stats.deaths) AS total_deaths,
-      (EXTRACT(year FROM stats.created_at))::integer AS year,
-          CASE
-              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
-              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
-          END AS kills_deaths_ratio
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('day'::text, now()))
-    GROUP BY players.id, players.steam_id, (EXTRACT(year FROM stats.created_at));
-  SQL
-  add_index "yearly_kills_deaths_stats", ["player_id"], name: "index_yearly_kills_deaths_stats_on_player_id", unique: true
-  add_index "yearly_kills_deaths_stats", ["steam_id"], name: "index_yearly_kills_deaths_stats_on_steam_id", unique: true
-
-  create_view "all_time_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+  create_view "kills_deaths_stats", materialized: true, sql_definition: <<-SQL
       SELECT players.id AS player_id,
       players.name AS player_name,
       players.steam_id,
@@ -283,66 +154,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
        JOIN players ON ((players.id = stats.player_id)))
     GROUP BY players.id, players.steam_id;
   SQL
-  add_index "all_time_kills_deaths_stats", ["player_id"], name: "index_all_time_kills_deaths_stats_on_player_id", unique: true
-  add_index "all_time_kills_deaths_stats", ["steam_id"], name: "index_all_time_kills_deaths_stats_on_steam_id", unique: true
+  add_index "kills_deaths_stats", ["player_id"], name: "index_kills_deaths_stats_on_player_id", unique: true
+  add_index "kills_deaths_stats", ["steam_id"], name: "index_kills_deaths_stats_on_steam_id", unique: true
 
-  create_view "daily_wins_losses_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.win) AS total_wins,
-      sum(stats.lose) AS total_losses
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('day'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "daily_wins_losses_stats", ["player_id"], name: "index_daily_wins_losses_stats_on_player_id", unique: true
-  add_index "daily_wins_losses_stats", ["steam_id"], name: "index_daily_wins_losses_stats_on_steam_id", unique: true
-
-  create_view "weekly_wins_losses_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.win) AS total_wins,
-      sum(stats.lose) AS total_losses
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('week'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "weekly_wins_losses_stats", ["player_id"], name: "index_weekly_wins_losses_stats_on_player_id", unique: true
-  add_index "weekly_wins_losses_stats", ["steam_id"], name: "index_weekly_wins_losses_stats_on_steam_id", unique: true
-
-  create_view "monthly_wins_losses_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.win) AS total_wins,
-      sum(stats.lose) AS total_losses
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    WHERE (stats.created_at >= date_trunc('month'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "monthly_wins_losses_stats", ["player_id"], name: "index_monthly_wins_losses_stats_on_player_id", unique: true
-  add_index "monthly_wins_losses_stats", ["steam_id"], name: "index_monthly_wins_losses_stats_on_steam_id", unique: true
-
-  create_view "yearly_wins_losses_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(stats.win) AS total_wins,
-      sum(stats.lose) AS total_losses,
-      (EXTRACT(year FROM stats.created_at))::integer AS year
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    GROUP BY players.id, players.steam_id, (EXTRACT(year FROM stats.created_at));
-  SQL
-  add_index "yearly_wins_losses_stats", ["player_id"], name: "index_yearly_wins_losses_stats_on_player_id", unique: true
-  add_index "yearly_wins_losses_stats", ["steam_id"], name: "index_yearly_wins_losses_stats_on_steam_id", unique: true
-
-  create_view "all_time_wins_losses_stats", materialized: true, sql_definition: <<-SQL
+  create_view "wins_losses_stats", materialized: true, sql_definition: <<-SQL
       SELECT players.id AS player_id,
       players.name AS player_name,
       players.steam_id,
@@ -352,10 +167,10 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
        JOIN players ON ((players.id = stats.player_id)))
     GROUP BY players.id, players.steam_id;
   SQL
-  add_index "all_time_wins_losses_stats", ["player_id"], name: "index_all_time_wins_losses_stats_on_player_id", unique: true
-  add_index "all_time_wins_losses_stats", ["steam_id"], name: "index_all_time_wins_losses_stats_on_steam_id", unique: true
+  add_index "wins_losses_stats", ["player_id"], name: "index_wins_losses_stats_on_player_id", unique: true
+  add_index "wins_losses_stats", ["steam_id"], name: "index_wins_losses_stats_on_steam_id", unique: true
 
-  create_view "all_time_medals_stats", materialized: true, sql_definition: <<-SQL
+  create_view "medals_stats", materialized: true, sql_definition: <<-SQL
       SELECT players.id AS player_id,
       players.name AS player_name,
       players.steam_id,
@@ -380,124 +195,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022420) do
        JOIN medals ON ((stats.id = medals.stat_id)))
     GROUP BY players.id, players.steam_id;
   SQL
-  add_index "all_time_medals_stats", ["player_id"], name: "index_all_time_medals_stats_on_player_id", unique: true
-  add_index "all_time_medals_stats", ["steam_id"], name: "index_all_time_medals_stats_on_steam_id", unique: true
-
-  create_view "yearly_medals_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(medals.accuracy) AS accuracy,
-      sum(medals.assists) AS assists,
-      sum(medals.captures) AS captures,
-      sum(medals.combokill) AS combokill,
-      sum(medals.defends) AS defends,
-      sum(medals.excellent) AS excellent,
-      sum(medals.firstfrag) AS firstfrag,
-      sum(medals.headshot) AS headshot,
-      sum(medals.humiliation) AS humiliation,
-      sum(medals.impressive) AS impressive,
-      sum(medals.midair) AS midair,
-      sum(medals.perfect) AS perfect,
-      sum(medals.perforated) AS perforated,
-      sum(medals.quadgod) AS quadgod,
-      sum(medals.rampage) AS rampage,
-      sum(medals.revenge) AS revenge,
-      (EXTRACT(year FROM stats.created_at))::integer AS year
-     FROM ((stats
-       JOIN players ON ((players.id = stats.player_id)))
-       JOIN medals ON ((stats.id = medals.stat_id)))
-    WHERE (stats.created_at >= date_trunc('year'::text, now()))
-    GROUP BY players.id, players.steam_id, (EXTRACT(year FROM stats.created_at));
-  SQL
-  add_index "yearly_medals_stats", ["player_id"], name: "index_yearly_medals_stats_on_player_id", unique: true
-  add_index "yearly_medals_stats", ["steam_id"], name: "index_yearly_medals_stats_on_steam_id", unique: true
-
-  create_view "monthly_medals_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(medals.accuracy) AS accuracy,
-      sum(medals.assists) AS assists,
-      sum(medals.captures) AS captures,
-      sum(medals.combokill) AS combokill,
-      sum(medals.defends) AS defends,
-      sum(medals.excellent) AS excellent,
-      sum(medals.firstfrag) AS firstfrag,
-      sum(medals.headshot) AS headshot,
-      sum(medals.humiliation) AS humiliation,
-      sum(medals.impressive) AS impressive,
-      sum(medals.midair) AS midair,
-      sum(medals.perfect) AS perfect,
-      sum(medals.perforated) AS perforated,
-      sum(medals.quadgod) AS quadgod,
-      sum(medals.rampage) AS rampage,
-      sum(medals.revenge) AS revenge
-     FROM ((stats
-       JOIN players ON ((players.id = stats.player_id)))
-       JOIN medals ON ((stats.id = medals.stat_id)))
-    WHERE (stats.created_at >= date_trunc('month'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "monthly_medals_stats", ["player_id"], name: "index_monthly_medals_stats_on_player_id", unique: true
-  add_index "monthly_medals_stats", ["steam_id"], name: "index_monthly_medals_stats_on_steam_id", unique: true
-
-  create_view "weekly_medals_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(medals.accuracy) AS accuracy,
-      sum(medals.assists) AS assists,
-      sum(medals.captures) AS captures,
-      sum(medals.combokill) AS combokill,
-      sum(medals.defends) AS defends,
-      sum(medals.excellent) AS excellent,
-      sum(medals.firstfrag) AS firstfrag,
-      sum(medals.headshot) AS headshot,
-      sum(medals.humiliation) AS humiliation,
-      sum(medals.impressive) AS impressive,
-      sum(medals.midair) AS midair,
-      sum(medals.perfect) AS perfect,
-      sum(medals.perforated) AS perforated,
-      sum(medals.quadgod) AS quadgod,
-      sum(medals.rampage) AS rampage,
-      sum(medals.revenge) AS revenge
-     FROM ((stats
-       JOIN players ON ((players.id = stats.player_id)))
-       JOIN medals ON ((stats.id = medals.stat_id)))
-    WHERE (stats.created_at >= date_trunc('week'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "weekly_medals_stats", ["player_id"], name: "index_weekly_medals_stats_on_player_id", unique: true
-  add_index "weekly_medals_stats", ["steam_id"], name: "index_weekly_medals_stats_on_steam_id", unique: true
-
-  create_view "daily_medals_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
-      players.name AS player_name,
-      players.steam_id,
-      sum(medals.accuracy) AS accuracy,
-      sum(medals.assists) AS assists,
-      sum(medals.captures) AS captures,
-      sum(medals.combokill) AS combokill,
-      sum(medals.defends) AS defends,
-      sum(medals.excellent) AS excellent,
-      sum(medals.firstfrag) AS firstfrag,
-      sum(medals.headshot) AS headshot,
-      sum(medals.humiliation) AS humiliation,
-      sum(medals.impressive) AS impressive,
-      sum(medals.midair) AS midair,
-      sum(medals.perfect) AS perfect,
-      sum(medals.perforated) AS perforated,
-      sum(medals.quadgod) AS quadgod,
-      sum(medals.rampage) AS rampage,
-      sum(medals.revenge) AS revenge
-     FROM ((stats
-       JOIN players ON ((players.id = stats.player_id)))
-       JOIN medals ON ((stats.id = medals.stat_id)))
-    WHERE (stats.created_at >= date_trunc('day'::text, now()))
-    GROUP BY players.id, players.steam_id;
-  SQL
-  add_index "daily_medals_stats", ["player_id"], name: "index_daily_medals_stats_on_player_id", unique: true
-  add_index "daily_medals_stats", ["steam_id"], name: "index_daily_medals_stats_on_steam_id", unique: true
+  add_index "medals_stats", ["player_id"], name: "index_medals_stats_on_player_id", unique: true
+  add_index "medals_stats", ["steam_id"], name: "index_medals_stats_on_steam_id", unique: true
 
 end

@@ -6,15 +6,6 @@ module TimeFilterable
 
   TIME_FILTERS = %w[day week month year all_time].freeze
 
-  TIME_FILTER_TO_ADJECTIVE ={
-    "day" => "daily",
-    "month" => "monthly",
-    "year" => "yearly",
-    "week" => "weekly",
-    "hour" => "hourly",
-    "all_time" => "all_time"
-  }
-
   def self.start_time_for(time_filter:, timezone:)
     unless TIME_FILTERS.include?(time_filter)
       raise ArgumentError, invalid_time_filter_error_message

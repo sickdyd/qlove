@@ -1,6 +1,4 @@
 class Api::V1::Leaderboards::KillsDeathsController < Api::V1::BaseController
-  before_action :set_model
-
   def kills
     render_leaderboard(sort_by: KillsDeathsStat::TOTAL_KILLS_COLUMN)
   end
@@ -22,17 +20,12 @@ class Api::V1::Leaderboards::KillsDeathsController < Api::V1::BaseController
         :timezone,
         :limit,
         :formatted_table,
-        :year,
       )
       .with_defaults(COMMON_PARAMS_DEFAULTS)
   end
 
   def render_leaderboard(sort_by:)
-    data = @model.leaderboard(**kills_deaths_params.to_h.symbolize_keys.merge(sort_by: sort_by))
+    data = KillsDeathsStat.leaderboard(**kills_deaths_params.to_h.symbolize_keys.merge(sort_by: sort_by))
     render json: { data: data }
-  end
-
-  def set_model
-    @model = KillsDeathsStat.model_for_time_filter(kills_deaths_params[:time_filter])
   end
 end
