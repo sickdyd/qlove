@@ -9,15 +9,7 @@ class BaseMaterializedView < ApplicationRecord
     Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
   end
 
-  def self.model_for_time_filter(time_filter)
-    # Reconstruct the name of the class based on the time filter, such as DamageStat::DailyDamageStat
-    "#{name}::#{TimeFilterable::TIME_FILTER_TO_ADJECTIVE[time_filter].camelize}#{name}".constantize
-  end
-
-  def self.leaderboard(time_filter:, timezone:, limit:, sort_by:, formatted_table:, medals: nil)
-    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
-    end_time = Time.current.in_time_zone(timezone)
-
+  def self.all_time(timezone:, limit:, sort_by:, formatted_table:)
     query = all
 
     # Call the block to allow the derived class to modify the query
@@ -25,13 +17,11 @@ class BaseMaterializedView < ApplicationRecord
     query = yield(query) if block_given?
 
     data = query
-      .where(created_at: start_time..end_time)
       .order("#{sort_by} DESC")
       .limit(limit)
 
     if formatted_table
-      headers = model_for_time_filter(time_filter)::HEADERS
-      return to_table(data: data, headers: headers, time_filter: time_filter, sort_by: sort_by)
+      return to_table(data: data, headers: HEADERS, time_filter: time_filter, sort_by: sort_by)
     end
 
     data
