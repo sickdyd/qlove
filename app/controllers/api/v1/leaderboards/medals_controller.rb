@@ -32,7 +32,8 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
 
   def render_leaderboard(sort_by:)
     medals = medals_params[:medals].split(',')
-    data = MedalsStat.leaderboard(**medals_params.to_h.symbolize_keys.merge(sort_by: sort_by, medals: medals))
+    params = medals_params.to_h.symbolize_keys.merge(sort_by: sort_by, medals: medals)
+    data = MedalsCalculatorService.new(**params).leaderboard
     render json: { data: data }
   end
 end

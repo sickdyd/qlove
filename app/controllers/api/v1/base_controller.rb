@@ -5,7 +5,7 @@ class Api::V1::BaseController < ApplicationController
   before_action :validate_formatted_table
 
   DEFAULT_RESULTS_LIMIT = 10
-  MAX_RESULTS_LIMIT = 100
+  MAX_RESULTS_LIMIT = 30
   MIN_RESULTS_LIMIT = 1
   EARLIEST_YEAR = 2010
 
@@ -48,5 +48,7 @@ class Api::V1::BaseController < ApplicationController
     unless ['true', 'false'].include?(params[:formatted_table])
       render json: { error: 'Invalid formatted_table', valid_values: "true, false" }, status: :bad_request
     end
+
+    params[:formatted_table] = ActiveRecord::Type::Boolean.new.deserialize(params[:formatted_table])
   end
 end
