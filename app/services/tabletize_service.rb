@@ -20,7 +20,14 @@ class TabletizeService
     @data.each_with_index.map do |player, index|
       [index + 1] + @headers.map do |header|
         value = player[header]
-        header == :player_name ? truncate_name(value) : (value || "-")
+        if header == :player_name
+          value = truncate_name(value)
+        else
+          if value === 0 || value.nil?
+            value = "-"
+          end
+        end
+        value
       end
     end
   end
