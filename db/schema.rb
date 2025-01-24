@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_18_022342) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_24_100554) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -103,6 +103,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022342) do
     t.integer "win", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["created_at", "player_id"], name: "index_stats_on_created_at_and_player_id"
+    t.index ["created_at"], name: "index_stats_on_created_at"
     t.index ["player_id"], name: "index_stats_on_player_id"
   end
 
@@ -119,6 +121,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_18_022342) do
     t.integer "time", default: 0
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_weapons_on_name"
     t.index ["stat_id"], name: "index_weapons_on_stat_id"
   end
 
