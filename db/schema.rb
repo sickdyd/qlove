@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_24_100554) do
+ActiveRecord::Schema[7.2].define(version: 2025_01_24_110158) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -200,5 +200,23 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_100554) do
   SQL
   add_index "medals_stats", ["player_id"], name: "index_medals_stats_on_player_id", unique: true
   add_index "medals_stats", ["steam_id"], name: "index_medals_stats_on_steam_id", unique: true
+
+  create_view "accuracy_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id AS player_id,
+      players.name AS player_name,
+      players.steam_id,
+      weapons.name AS weapon_name,
+      sum(weapons.shots) AS total_shots,
+      sum(weapons.hits) AS total_hits,
+      stats.created_at
+     FROM ((weapons
+       JOIN stats ON ((weapons.stat_id = stats.id)))
+       JOIN players ON ((stats.player_id = players.id)))
+    GROUP BY players.id, players.steam_id, weapons.name, stats.created_at;
+  SQL
+  add_index "accuracy_stats", ["created_at"], name: "index_accuracy_stats_on_created_at"
+  add_index "accuracy_stats", ["steam_id", "created_at", "weapon_name"], name: "idx_on_steam_id_created_at_weapon_name_d3efa4478e", unique: true
+  add_index "accuracy_stats", ["steam_id"], name: "index_accuracy_stats_on_steam_id"
+  add_index "accuracy_stats", ["weapon_name"], name: "index_accuracy_stats_on_weapon_name"
 
 end

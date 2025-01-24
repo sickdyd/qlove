@@ -1,110 +1,45 @@
-class AccuracyCalculatorService
-  include TimeFilterable
-
-  UNAVAILABLE_ACCURACY = '-'
-
-  ALL_WEAPONS = %w[
-    bfg
-    chaingun
-    gauntlet
-    grenade
-    hmg
-    lightning
-    machinegun
-    nailgun
-    other_weapon
-    plasma
-    proxmine
-    railgun
-    rocket
-    shotgun
-  ].freeze
-
-  SHORTENED_WEAPON_NAMES = {
-    'bfg' => 'BFG',
-    'chaingun' => 'CG',
-    'gauntlet' => 'G',
-    'grenade' => 'GL',
-    'hmg' => 'HMG',
-    'lightning' => 'LG',
-    'machinegun' => 'MG',
-    'nailgun' => 'NG',
-    'other_weapon' => 'OW',
-    'plasma' => 'PG',
-    'proxmine' => 'PM',
-    'railgun' => 'RG',
-    'rocket' => 'RL',
-    'shotgun' => 'SG'
-  }.freeze
-
-  SHORTENED_HEADERS = {
-    average_accuracy: 'AVG'
-  }
-
-  def self.calculate_accuracy(time_filter:, timezone:, limit:, formatted_table:, year:, weapons:, steam_id: nil)
-    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
-
-    return [] unless start_time.present?
-
-    begin
-      query = Weapon.joins(stat: :player)
-      query = query.where('player.steam_id = ?', steam_id) if steam_id.present?
-      query = query.where(name: weapons)
-      query = query.where('stats.created_at >= ?', start_time)
-
-      all_weapon_damages = query.group('player.id', 'weapons.name')
-        .pluck('player.steam_id', 'player.name', 'weapons.name', 'SUM(weapons.shots) as total_shots', 'SUM(weapons.hits) as total_hits')
-
-      results = all_weapon_damages.inject({}) do |hash, (steam_id, player_name, weapon_name, total_shots, total_hits)|
-        key = {
-          steam_id: steam_id,
-          player_name: player_name
-        }
-
-        hash[key] ||= { weapons: [], total_accuracy: 0, valid_weapon_count: 0 }
-
-        weapon_accuracy = total_shots.to_i.zero? ? UNAVAILABLE_ACCURACY : (total_hits.to_f / total_shots.to_f * 100).round
-
-        hash[key][:weapons] << {
-          weapon_name: SHORTENED_WEAPON_NAMES[weapon_name],
-          accuracy: weapon_accuracy
-        }
-
-        if weapon_accuracy != UNAVAILABLE_ACCURACY
-          hash[key][:total_accuracy] += weapon_accuracy
-          hash[key][:valid_weapon_count] += 1
-        end
-
-        hash
-      end
-
-      final_results = results.map do |key, value|
-        average_accuracy = value[:valid_weapon_count].positive? ? (value[:total_accuracy] / value[:valid_weapon_count]).round : UNAVAILABLE_ACCURACY
-
-        weapon_stats = value[:weapons].each_with_object({}) do |weapon, hash|
-          hash[weapon[:weapon_name].to_sym] = weapon[:accuracy]
-        end
-
-        average_accuracy_key = SHORTENED_HEADERS[:average_accuracy]
-        key.merge(average_accuracy_key => average_accuracy).merge(weapon_stats)
-      end
-
-      sorted_results = final_results.sort_by do |key, _value|
-        key[:average_accuracy] == "-" ? -Float::INFINITY : key[:average_accuracy]
-      end.reverse.take(limit)
-
-      formatted_table ? to_table(data: sorted_results, time_filter: time_filter, weapons: weapons) : sorted_results
-    rescue ActiveRecord::StatementInvalid => e
-      Rails.logger.error("Error in AccuracyCalculatorService: #{e.message}")
-      []
-    end
-  end
-
+class AccuracyCalculatorService < BaseCalculatorService
   private
 
-  def self.to_table(data:, time_filter:, weapons:)
-    title = "Best Accuracy for the #{time_filter}"
-    headers = %w[player_name avg].concat(weapons.map { |weapon| SHORTENED_WEAPON_NAMES[weapon] })
-    TabletizeService.new(title: title, data: data, headers: headers).table
+  def time_filter_results
+    average_header = AccuracyStat::SHORTENED_HEADERS[:average_accuracy].to_sym
+    query = steam_id.present? ? AccuracyStat.where(steam_id: steam_id) : AccuracyStat
+
+    query = query.where(created_at: start_time..Time.current)
+      .where(weapon_name: weapons)
+      .group(:steam_id, :weapon_name, :player_name)
+      .order(:steam_id)
+
+    data = query.pluck(:steam_id, :player_name, :weapon_name, 'SUM(total_shots)', 'SUM(total_hits)').map do |steam_id, player_name, weapon_name, total_shots, total_hits|
+      accuracy = total_shots.zero? ? AccuracyStat::UNAVAILABLE_ACCURACY : (total_hits.to_f / total_shots.to_f * 100).round
+
+      {
+        steam_id: steam_id,
+        player_name: player_name,
+        weapon_name: weapon_name,
+        accuracy: accuracy
+      }
+    end
+
+    transformed_data = data.group_by { |entry| entry[:steam_id] }.map do |steam_id, entries|
+      player_name = entries.first[:player_name]
+
+      weapon_data = entries.each_with_object({}) do |entry, hash|
+        hash[AccuracyStat::SHORTENED_WEAPON_NAMES[entry[:weapon_name].to_s].to_sym] = entry[:accuracy]
+      end
+
+      valid_accuracies = weapon_data.values.reject { |v| v == AccuracyStat::UNAVAILABLE_ACCURACY }
+      avg_accuracy = valid_accuracies.any? ? (valid_accuracies.sum / valid_accuracies.size).round : AccuracyStat::UNAVAILABLE_ACCURACY
+
+      { steam_id: steam_id, player_name: player_name }
+        .merge(weapon_data)
+        .merge(average_header => avg_accuracy)
+    end
+
+    transformed_data.sort_by { |entry| entry[average_header] == '-' ? -Float::INFINITY : entry[average_header] }.reverse.take(limit)
+  end
+
+  def model
+    AccuracyStat
   end
 end

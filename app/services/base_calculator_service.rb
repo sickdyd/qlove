@@ -1,15 +1,19 @@
 class BaseCalculatorService
   include TimeFilterable
 
-  attr_reader :time_filter, :timezone, :limit, :formatted_table, :sort_by, :medals
+  HAVE_ALL_TIME_MATERIALIZED_VIEWS = [DamageStat, KillsDeathsStat, WinsLossesStat, MedalsStat].freeze
 
-  def initialize(time_filter:, timezone:, limit:, formatted_table:, sort_by:, medals: nil)
+  attr_reader :time_filter, :timezone, :limit, :formatted_table, :sort_by, :medals, :weapons, :steam_id
+
+  def initialize(time_filter:, timezone:, limit:, formatted_table:, sort_by:, medals: nil, weapons: nil, steam_id: nil)
     @time_filter = time_filter
     @timezone = timezone
     @limit = limit
     @formatted_table = formatted_table
     @sort_by = sort_by
     @medals = medals
+    @weapons = weapons
+    @steam_id = steam_id
   end
 
   def leaderboard
@@ -19,7 +23,11 @@ class BaseCalculatorService
   private
 
   def results
-    time_filter == 'all_time' ? all_time_results : time_filter_results
+    (time_filter == 'all_time' && have_all_time_materialized_view?) ? all_time_results : time_filter_results
+  end
+
+  def have_all_time_materialized_view?
+    HAVE_ALL_TIME_MATERIALIZED_VIEWS.include?(model)
   end
 
   def all_time_results
@@ -48,6 +56,8 @@ class BaseCalculatorService
   def headers
     if model == MedalsStat
       model.headers(medals)
+    elsif model == AccuracyStat
+      model.headers(weapons)
     else
       model::HEADERS
     end

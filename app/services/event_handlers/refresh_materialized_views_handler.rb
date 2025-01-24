@@ -9,8 +9,9 @@ module EventHandlers
       KillsDeathsStat.refresh
       WinsLossesStat.refresh
       MedalsStat.refresh
+      AccuracyStat.refresh
 
-      limit = 10
+      limit = 1000
 
       Benchmark.bm do |x|
         x.report("Materialized View:") do
