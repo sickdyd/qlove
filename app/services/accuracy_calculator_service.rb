@@ -36,7 +36,7 @@ class AccuracyCalculatorService < BaseCalculatorService
         .merge(average_header => avg_accuracy)
     end
 
-    transformed_data.sort_by { |entry| entry[average_header] == '-' ? -Float::INFINITY : entry[average_header] }.reverse.take(limit)
+    transformed_data.sort_by { |entry| entry[average_header] == '-' ? -Float::INFINITY : entry[average_header] }.reverse.take(limit.to_i)
   end
 
   def model
