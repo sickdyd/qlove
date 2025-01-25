@@ -123,7 +123,7 @@ class WinsLossesCalculatorTest < ActiveSupport::TestCase
       timezone: "UTC",
       limit: 10,
       formatted_table: false,
-      sort_by: WinsLossesStat::TOTAL_WINS_COLUMN,
+      sort_by: WinsLossesStat::TOTAL_WINS_COLUMN
     }
   end
 end

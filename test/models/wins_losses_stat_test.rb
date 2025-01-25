@@ -20,7 +20,7 @@ class WinsLossesStatTest < ActiveSupport::TestCase
     results = WinsLossesStat.all_time(
       timezone: "UTC",
       limit: 5,
-      sort_by: WinsLossesStat::TOTAL_WINS_COLUMN,
+      sort_by: WinsLossesStat::TOTAL_WINS_COLUMN
     )
 
     assert_equal 5, results.count
@@ -45,7 +45,7 @@ class WinsLossesStatTest < ActiveSupport::TestCase
       timezone: "UTC",
       # arbitrary limit
       limit: 100,
-      sort_by: WinsLossesStat::TOTAL_WINS_COLUMN,
+      sort_by: WinsLossesStat::TOTAL_WINS_COLUMN
     )
 
     # even if we create many more stats, the materialized view will

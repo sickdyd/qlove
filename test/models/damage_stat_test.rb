@@ -16,7 +16,7 @@ class DamageStatTest < ActiveSupport::TestCase
     results = DamageStat.all_time(
       timezone: "UTC",
       limit: 5,
-      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
+      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN
     )
 
     assert_equal 5, results.count
@@ -40,7 +40,7 @@ class DamageStatTest < ActiveSupport::TestCase
     results = DamageStat.all_time(
       timezone: "UTC",
       limit: 100,
-      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
+      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN
     )
 
     assert_equal 37, results.count

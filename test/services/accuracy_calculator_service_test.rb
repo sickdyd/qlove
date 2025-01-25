@@ -101,7 +101,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
       limit: 10,
       formatted_table: false,
       sort_by: "average_accuracy",
-      weapons: ["rocket", "shotgun", "railgun"]
+      weapons: [ "rocket", "shotgun", "railgun" ]
     }
   end
 end

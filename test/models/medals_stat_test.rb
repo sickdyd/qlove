@@ -34,7 +34,7 @@ class MedalsStatTest < ActiveSupport::TestCase
     )
 
     assert_equal 2, results.count
-    assert_equal %w[player_id player_name steam_id] + MedalsStat::ALL_MEDALS + ["total_medals"], results.first.attributes.keys
+    assert_equal %w[player_id player_name steam_id] + MedalsStat::ALL_MEDALS + [ "total_medals" ], results.first.attributes.keys
   end
 
   test "returns all time stats sorted by total_medals" do
@@ -58,7 +58,7 @@ class MedalsStatTest < ActiveSupport::TestCase
       medals: medals
     )
 
-    expected_keys = %w[player_id player_name steam_id] + medals + ["total_medals"]
+    expected_keys = %w[player_id player_name steam_id] + medals + [ "total_medals" ]
 
     assert_equal 1, results.count
     assert_equal expected_keys, results.first.attributes.keys

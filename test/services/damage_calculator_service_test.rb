@@ -121,7 +121,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
       timezone: "UTC",
       limit: 10,
       formatted_table: false,
-      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
+      sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN
     }
   end
 end
