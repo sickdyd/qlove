@@ -16,7 +16,6 @@ class DamageStatTest < ActiveSupport::TestCase
 
   test "returns all time stats sorted by total_damage_dealt" do
     results = DamageStat.all_time(
-      time_filter: "day",
       timezone: "UTC",
       limit: 5,
       sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
@@ -29,7 +28,6 @@ class DamageStatTest < ActiveSupport::TestCase
 
   test "returns all time stats sorted by total_damage_taken" do
     results = DamageStat.all_time(
-      time_filter: "day",
       timezone: "UTC",
       limit: 5,
       sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN,
@@ -42,7 +40,6 @@ class DamageStatTest < ActiveSupport::TestCase
 
   test "includes all stats" do
     results = DamageStat.all_time(
-      time_filter: "day",
       timezone: "UTC",
       limit: 35,
       sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,

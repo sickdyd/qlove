@@ -9,7 +9,7 @@ class BaseMaterializedView < ApplicationRecord
     Scenic.database.refresh_materialized_view(table_name, concurrently: true, cascade: false)
   end
 
-  def self.all_time(time_filter:, timezone:, limit:, sort_by:, medals: nil)
+  def self.all_time(timezone:, limit:, sort_by:, medals: nil)
     query = all
 
     # Call the block to allow the derived class to modify the query

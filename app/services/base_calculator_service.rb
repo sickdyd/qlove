@@ -33,7 +33,6 @@ class BaseCalculatorService
   def all_time_results
     model.all_time(
       timezone: timezone,
-      time_filter: time_filter,
       limit: limit,
       sort_by: sort_by,
       medals: medals
