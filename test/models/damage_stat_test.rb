@@ -36,13 +36,16 @@ class DamageStatTest < ActiveSupport::TestCase
     assert_equal "^7D^1r^7a^1g^7o^1n", results.first.player_name
   end
 
-  test "includes all stats" do
+  test "returns all stats" do
     results = DamageStat.all_time(
       timezone: "UTC",
-      limit: 35,
+      limit: 100,
       sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
     )
 
-    assert_not_includes results.map(&:id), @old_stats.map(&:id)
+    assert_equal 37, results.count
+    @old_stats.each do |stat|
+      assert results.map(&:player_id).include?(stat.player_id)
+    end
    end
 end
