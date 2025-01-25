@@ -7,8 +7,8 @@ module EventHandlers
 
       Rails.logger.debug "Handling PLAYER_CONNECT event: #{event_data}"
 
-      steam_id = event_data.dig('DATA', 'STEAM_ID')
-      name = event_data.dig('DATA', 'NAME')
+      steam_id = event_data.dig("DATA", "STEAM_ID")
+      name = event_data.dig("DATA", "NAME")
 
       create_or_update_player(steam_id: steam_id, name: name)
     end

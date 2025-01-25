@@ -5,7 +5,7 @@ class BestPlayerCalculatorService
     start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
     return [] unless start_time.present?
 
-    stats = Stat.where('stats.created_at >= ?', start_time).includes(:player, :weapons)
+    stats = Stat.where("stats.created_at >= ?", start_time).includes(:player, :weapons)
 
     player_totals = stats.each_with_object({}) do |stat, totals|
       player = stat.player

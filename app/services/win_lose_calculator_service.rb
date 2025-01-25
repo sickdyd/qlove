@@ -6,16 +6,16 @@ class WinsLossesCalculatorService < BaseCalculatorService
   end
 
   def time_filter_results
-    query = Stat.where('stats.created_at >= ?', start_time)
+    query = Stat.where("stats.created_at >= ?", start_time)
 
     results = query.joins(:player)
       .select(
-        'players.name as player_name',
-        'players.steam_id as steam_id',
-        'SUM(stats.win) as total_wins',
-        'SUM(stats.lose) as total_losses'
+        "players.name as player_name",
+        "players.steam_id as steam_id",
+        "SUM(stats.win) as total_wins",
+        "SUM(stats.lose) as total_losses"
       )
-      .group('players.id', 'players.name', 'players.steam_id')
+      .group("players.id", "players.name", "players.steam_id")
       .order("#{sort_by} DESC")
       .limit(limit)
 

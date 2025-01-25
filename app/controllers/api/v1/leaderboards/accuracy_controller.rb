@@ -31,17 +31,17 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
   def weapons_array
     return AccuracyStat::ALL_WEAPONS if params[:weapons].blank?
 
-    params[:weapons].split(',').map(&:strip)
+    params[:weapons].split(",").map(&:strip)
   end
 
   def validate_steam_id
     unless params[:steam_id].present?
-      render json: { error: 'Missing steam_id' }, status: :bad_request
+      render json: { error: "Missing steam_id" }, status: :bad_request
       return
     end
 
     unless Player.exists?(steam_id: params[:steam_id])
-      render json: { error: 'Invalid steam_id' }, status: :bad_request
+      render json: { error: "Invalid steam_id" }, status: :bad_request
     end
   end
 

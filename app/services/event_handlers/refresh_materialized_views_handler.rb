@@ -1,4 +1,4 @@
-require 'benchmark'
+require "benchmark"
 
 module EventHandlers
   class RefreshMaterializedViewsHandler
@@ -24,13 +24,13 @@ module EventHandlers
           stats = Stat
             .joins(:player)
             .select(
-              'players.name AS player_name',
-              'players.steam_id AS steam_id',
-              'SUM(stats.damage_dealt) AS total_damage_dealt',
-              'SUM(stats.damage_taken) AS total_damage_taken'
+              "players.name AS player_name",
+              "players.steam_id AS steam_id",
+              "SUM(stats.damage_dealt) AS total_damage_dealt",
+              "SUM(stats.damage_taken) AS total_damage_taken"
             )
-            .group('players.id', 'players.name', 'players.steam_id')
-            .order('SUM(stats.damage_dealt) DESC')
+            .group("players.id", "players.name", "players.steam_id")
+            .order("SUM(stats.damage_dealt) DESC")
             .limit(limit)
             .to_a
 

@@ -8,7 +8,7 @@ class TabletizeService
   end
 
   def strip_formatting(string)
-    string.gsub(/\^([0-9]|\^)/, '') if string
+    string.gsub(/\^([0-9]|\^)/, "") if string
   end
 
   def truncate_name(name)
@@ -18,7 +18,7 @@ class TabletizeService
 
   def rows
     @data.each_with_index.map do |player, index|
-      [index + 1] + @headers.map do |header|
+      [ index + 1 ] + @headers.map do |header|
         value = player[header]
         if header == :player_name
           value = truncate_name(value)
@@ -33,7 +33,7 @@ class TabletizeService
   end
 
   def formatted_headers
-    ["#"] + @headers.map { |header| header.to_s.split('_').map(&:upcase).join(' ') }
+    [ "#" ] + @headers.map { |header| header.to_s.split("_").map(&:upcase).join(" ") }
   end
 
   def table
@@ -41,10 +41,10 @@ class TabletizeService
     headers_data = formatted_headers
     return "No data to display." if headers_data.empty? || rows_data.empty?
 
-    max_lengths = headers_data.map { |header| [header.length, MIN_COLUMN_WIDTH].max }
+    max_lengths = headers_data.map { |header| [ header.length, MIN_COLUMN_WIDTH ].max }
     rows_data.each do |row|
       row.each_with_index do |cell, i|
-        max_lengths[i] = [max_lengths[i], strip_formatting(cell.to_s).length].max
+        max_lengths[i] = [ max_lengths[i], strip_formatting(cell.to_s).length ].max
       end
     end
 
@@ -60,13 +60,13 @@ class TabletizeService
     end
 
     title_line = if @title
-                   total_table_width = separator_line.length
-                   centered_title = @title.center(total_table_width - 2)
-                   "+#{'-' * (total_table_width - 2)}+\n|#{centered_title}|\n#{separator_line}\n"
-                 else
-                   ""
-                 end
+      total_table_width = separator_line.length
+      centered_title = @title.center(total_table_width - 2)
+      "+#{"-" * (total_table_width - 2)}+\n|#{centered_title}|\n#{separator_line}\n"
+    else
+      ""
+    end
 
-    title_line + [header_line, separator_line, *row_lines, separator_line].join("\n")
+    title_line + [ header_line, separator_line, *row_lines, separator_line ].join("\n")
   end
 end

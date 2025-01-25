@@ -10,10 +10,10 @@ class Api::V1::BaseController < ApplicationController
   EARLIEST_YEAR = 2010
 
   COMMON_PARAMS_DEFAULTS = {
-    time_filter: 'all_time',
+    time_filter: "all_time",
     timezone: TimeFilterable::DEFAULT_TIMEZONE,
     limit: DEFAULT_RESULTS_LIMIT,
-    formatted_table: false,
+    formatted_table: false
   }
 
   private
@@ -22,7 +22,7 @@ class Api::V1::BaseController < ApplicationController
     return if params[:time_filter].blank?
 
     unless  TimeFilterable::TIME_FILTERS.include?(params[:time_filter])
-      render json: { error: 'Invalid time_filter' }, status: :bad_request
+      render json: { error: "Invalid time_filter" }, status: :bad_request
     end
   end
 
@@ -38,15 +38,15 @@ class Api::V1::BaseController < ApplicationController
     return if params[:limit].blank?
 
     unless params[:limit].to_i.between?(MIN_RESULTS_LIMIT, MAX_RESULTS_LIMIT)
-      render json: { error: 'Invalid limit', valid_limits: "#{MIN_RESULTS_LIMIT} to #{MAX_RESULTS_LIMIT}" }, status: :bad_request
+      render json: { error: "Invalid limit", valid_limits: "#{MIN_RESULTS_LIMIT} to #{MAX_RESULTS_LIMIT}" }, status: :bad_request
     end
   end
 
   def validate_formatted_table
     return if params[:formatted_table].blank?
 
-    unless ['true', 'false'].include?(params[:formatted_table])
-      render json: { error: 'Invalid formatted_table', valid_values: "true, false" }, status: :bad_request
+    unless [ "true", "false" ].include?(params[:formatted_table])
+      render json: { error: "Invalid formatted_table", valid_values: "true, false" }, status: :bad_request
     end
 
     params[:formatted_table] = ActiveRecord::Type::Boolean.new.deserialize(params[:formatted_table])

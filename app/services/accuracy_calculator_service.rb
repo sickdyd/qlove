@@ -10,7 +10,7 @@ class AccuracyCalculatorService < BaseCalculatorService
       .group(:steam_id, :weapon_name, :player_name)
       .order(:steam_id)
 
-    data = query.pluck(:steam_id, :player_name, :weapon_name, 'SUM(total_shots)', 'SUM(total_hits)').map do |steam_id, player_name, weapon_name, total_shots, total_hits|
+    data = query.pluck(:steam_id, :player_name, :weapon_name, "SUM(total_shots)", "SUM(total_hits)").map do |steam_id, player_name, weapon_name, total_shots, total_hits|
       accuracy = total_shots.zero? ? AccuracyStat::UNAVAILABLE_ACCURACY : (total_hits.to_f / total_shots.to_f * 100).round
 
       {
@@ -36,7 +36,7 @@ class AccuracyCalculatorService < BaseCalculatorService
         .merge(average_header => avg_accuracy)
     end
 
-    transformed_data.sort_by { |entry| entry[average_header] == '-' ? -Float::INFINITY : entry[average_header] }.reverse.take(limit.to_i)
+    transformed_data.sort_by { |entry| entry[average_header] == "-" ? -Float::INFINITY : entry[average_header] }.reverse.take(limit.to_i)
   end
 
   def model

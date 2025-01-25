@@ -1,7 +1,7 @@
 namespace :test_data do
-  desc 'Populate the database with test data for performance testing'
+  desc "Populate the database with test data for performance testing"
   task populate: :environment do
-    require 'faker'
+    require "faker"
 
     BATCH_SIZE = 500
     PLAYER_COUNT = 50
@@ -42,18 +42,18 @@ namespace :test_data do
         stat = {
           player_id: player.id,
           match_guid: SecureRandom.uuid,
-          aborted: [true, false].sample,
+          aborted: [ true, false ].sample,
           blue_flag_pickups: Faker::Number.between(from: 0, to: 10),
           damage_dealt: Faker::Number.between(from: 1_000, to: 10_000),
           damage_taken: Faker::Number.between(from: 500, to: 5_000),
           deaths: Faker::Number.between(from: 5, to: 25),
           holy_shits: Faker::Number.between(from: 0, to: 10),
           kills: Faker::Number.between(from: 10, to: 50),
-          lose: [true, false].sample ? 1 : 0,
+          lose: [ true, false ].sample ? 1 : 0,
           max_streak: Faker::Number.between(from: 1, to: 10),
           neutral_flag_pickups: Faker::Number.between(from: 0, to: 10),
           play_time: Faker::Number.between(from: 300, to: 3600),
-          quit: [true, false].sample,
+          quit: [ true, false ].sample,
           rank: Faker::Number.between(from: 1, to: 10),
           red_flag_pickups: Faker::Number.between(from: 0, to: 10),
           score: Faker::Number.between(from: 100, to: 500),
@@ -62,8 +62,8 @@ namespace :test_data do
           team_rank: Faker::Number.between(from: 1, to: 10),
           tied_rank: Faker::Number.between(from: 0, to: 3),
           tied_team_rank: Faker::Number.between(from: 0, to: 3),
-          warmup: [true, false].sample,
-          win: [true, false].sample ? 1 : 0,
+          warmup: [ true, false ].sample,
+          win: [ true, false ].sample ? 1 : 0,
           created_at: created_at,
           updated_at: created_at
         }

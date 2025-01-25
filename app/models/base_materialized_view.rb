@@ -29,6 +29,6 @@ class BaseMaterializedView < ApplicationRecord
   end
 
   def self.table_title(time_filter:, sort_by:)
-    time_filter == 'all_time' ? "All Time #{sort_by.titleize}" : "#{sort_by.titleize} for the #{time_filter}"
+    time_filter == "all_time" ? "All Time #{sort_by.titleize}" : "#{sort_by.titleize} for the #{time_filter}"
   end
 end

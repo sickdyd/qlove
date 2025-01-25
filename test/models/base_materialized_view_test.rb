@@ -20,8 +20,8 @@ class BaseMaterializedViewTest < ActiveSupport::TestCase
 
     data = MODEL.limit(5).to_a
     headers = MODEL::HEADERS
-    time_filter = 'all_time'
-    sort_by = 'steam_id'
+    time_filter = "all_time"
+    sort_by = "steam_id"
 
     assert MODEL.send(:to_table, data: data, headers: headers, time_filter: time_filter, sort_by: sort_by).is_a?(String)
   end

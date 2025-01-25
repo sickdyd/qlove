@@ -20,7 +20,7 @@ class MedalsStat < BaseMaterializedView
     revenge
   ].freeze
 
-  TOTAL_MEDALS_COLUMN = 'total_medals'.freeze
+  TOTAL_MEDALS_COLUMN = "total_medals".freeze
 
   HEADERS = %w[player_name total_medals].concat(ALL_MEDALS).freeze
 
@@ -28,7 +28,7 @@ class MedalsStat < BaseMaterializedView
     medals = params[:medals]
 
     columns = %i[player_id player_name steam_id] + medals.map(&:to_sym)
-    total_medals_expr = medals.map { |medal| "COALESCE(#{medal}, 0)" }.join(' + ')
+    total_medals_expr = medals.map { |medal| "COALESCE(#{medal}, 0)" }.join(" + ")
 
     super(**params) do |query|
       query = query

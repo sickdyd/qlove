@@ -1,7 +1,7 @@
 class BaseCalculatorService
   include TimeFilterable
 
-  HAVE_ALL_TIME_MATERIALIZED_VIEWS = [DamageStat, KillsDeathsStat, WinsLossesStat, MedalsStat].freeze
+  HAVE_ALL_TIME_MATERIALIZED_VIEWS = [ DamageStat, KillsDeathsStat, WinsLossesStat, MedalsStat ].freeze
 
   attr_reader :time_filter, :timezone, :limit, :formatted_table, :sort_by, :medals, :weapons, :steam_id
 
@@ -23,7 +23,7 @@ class BaseCalculatorService
   private
 
   def results
-    (time_filter == 'all_time' && have_all_time_materialized_view?) ? all_time_results : time_filter_results
+    (time_filter == "all_time" && have_all_time_materialized_view?) ? all_time_results : time_filter_results
   end
 
   def have_all_time_materialized_view?

@@ -2,7 +2,7 @@ module TimeFilterable
   extend ActiveSupport::Concern
 
   VALID_TIMEZONES = ActiveSupport::TimeZone.all.map(&:name).freeze
-  DEFAULT_TIMEZONE = 'Beijing'.freeze
+  DEFAULT_TIMEZONE = "Beijing".freeze
 
   TIME_FILTERS = %w[day week month year all_time].freeze
 
@@ -16,15 +16,15 @@ module TimeFilterable
     end
 
     case time_filter
-    when 'day'
+    when "day"
       Time.current.in_time_zone(timezone).beginning_of_day
-    when 'week'
+    when "week"
       Time.current.in_time_zone(timezone).beginning_of_week
-    when 'month'
+    when "month"
       Time.current.in_time_zone(timezone).beginning_of_month
-    when 'year'
+    when "year"
       Time.current.in_time_zone(timezone).beginning_of_year
-    when 'all_time'
+    when "all_time"
       Time.new(Api::V1::BaseController::EARLIEST_YEAR)
     end
   end

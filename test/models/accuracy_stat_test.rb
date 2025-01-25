@@ -14,7 +14,7 @@ class AccuracyStatTest < ActiveSupport::TestCase
     results = AccuracyStat.all_time(
       timezone: "UTC",
       limit: AccuracyStat::ALL_WEAPONS.count,
-      sort_by: 'player_id'
+      sort_by: "player_id"
     )
 
     AccuracyStat::ALL_WEAPONS.each do |weapon_name|
