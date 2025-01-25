@@ -3,25 +3,28 @@ require "test_helper"
 class BaseMaterializedViewTest < ActiveSupport::TestCase
   include FactoryBot::Syntax::Methods
 
+  # For the test use a model that inherits from BaseMaterializedView
+  MODEL = DamageStat
+
   test "readonly materialized view" do
-    assert DamageStat.readonly?, "Materialized views should be readonly"
+    assert MODEL.readonly?, "Materialized views should be readonly"
   end
 
   test "refresh materialized view" do
     assert_nothing_raised do
-      DamageStat.refresh
+      MODEL.refresh
     end
   end
 
   test "to_table returns a string" do
     create_list(:stat, 5, created_at: Time.zone.now)
-    DamageStat.refresh
+    MODEL.refresh
 
-    data = DamageStat.limit(5).to_a
-    headers = DamageStat::HEADERS
-    time_filter = 'day'
-    sort_by = DamageStat::TOTAL_DAMAGE_DEALT_COLUMN
+    data = MODEL.limit(5).to_a
+    headers = MODEL::HEADERS
+    time_filter = 'all_time'
+    sort_by = 'steam_id'
 
-    assert DamageStat.send(:to_table, data: data, headers: headers, time_filter: time_filter, sort_by: sort_by).is_a?(String)
+    assert MODEL.send(:to_table, data: data, headers: headers, time_filter: time_filter, sort_by: sort_by).is_a?(String)
   end
 end
