@@ -1,7 +1,7 @@
 FactoryBot.define do
   factory :weapon do
     association :stat,
-    name { "weapon_name" }
+    name { "rocket" }
     deaths { Faker::Number.between(from: 0, to: 50) }
     damage_given { Faker::Number.between(from: 0, to: 5000) }
     damage_received { Faker::Number.between(from: 0, to: 5000) }
