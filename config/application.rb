@@ -28,5 +28,8 @@ module Qlove
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
+
+    # fix: DEPRECATION WARNING: `to_time` will always preserve the full timezone rather than offset of the receiver in Rails 8.1. To opt in to the new behavior, set `config.active_support.to_time_preserves_timezone = :zone`. (called from <main> at /Users/robertoreale/webdev/qlove/config/environment.rb:5)
+    config.active_support.to_time_preserves_timezone = :zone
   end
 end
