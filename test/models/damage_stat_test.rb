@@ -1,15 +1,13 @@
 require "test_helper"
 
 class DamageStatTest < ActiveSupport::TestCase
-  include FactoryBot::Syntax::Methods
-
   setup do
     create_list(:stat, 20, created_at: Time.zone.now.beginning_of_day)
     player1 = create(:player, name: "VOX AC10")
     player2 = create(:player, name: "^7D^1r^7a^1g^7o^1n")
     create(:stat, player: player1, damage_dealt: 110000)
     create(:stat, player: player2, damage_taken: 130000)
-    @old_stats = create_list(:stat, 15, created_at: Time.zone.now - 2.days)
+    @old_stats = create_list(:stat, 15, created_at: Faker::Time.between_dates(from: 2.year.ago, to: 1.week.ago, period: :all))
 
     DamageStat.refresh
   end

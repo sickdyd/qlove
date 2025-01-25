@@ -1,8 +1,6 @@
 require "test_helper"
 
 class BaseMaterializedViewTest < ActiveSupport::TestCase
-  include FactoryBot::Syntax::Methods
-
   # For the test use a model that inherits from BaseMaterializedView
   MODEL = DamageStat
 

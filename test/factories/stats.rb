@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :stat do
     association :player
     match_guid { SecureRandom.uuid }
-    aborted { [true, false].sample }
+    aborted { false }
     blue_flag_pickups { Faker::Number.between(from: 0, to: 20) }
     deaths { Faker::Number.between(from: 0, to: 50) }
     holy_shits { Faker::Number.between(from: 0, to: 10) }
@@ -10,7 +10,7 @@ FactoryBot.define do
     lose { Faker::Number.between(from: 0, to: 1) }
     max_streak { Faker::Number.between(from: 0, to: 20) }
     play_time { Faker::Number.between(from: 0, to: 10_000) } # in seconds
-    quit { [true, false].sample }
+    quit { false }
     rank { Faker::Number.between(from: 1, to: 10) }
     red_flag_pickups { Faker::Number.between(from: 0, to: 20) }
     score { Faker::Number.between(from: 0, to: 100) }
@@ -19,9 +19,10 @@ FactoryBot.define do
     team_rank { Faker::Number.between(from: 1, to: 10) }
     tied_rank { Faker::Number.between(from: 1, to: 10) }
     tied_team_rank { Faker::Number.between(from: 1, to: 10) }
-    warmup { [true, false].sample }
+    warmup { false }
     win { Faker::Number.between(from: 0, to: 1) }
     damage_dealt { Faker::Number.between(from: 1000, to: 5000) }
     damage_taken { Faker::Number.between(from: 1000, to: 5000) }
+    created_at { Faker::Time.between_dates(from: 1.year.ago, to: Time.zone.now, period: :all) }
   end
 end
