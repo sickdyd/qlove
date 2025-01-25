@@ -82,7 +82,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "#time_filter_results returns the correct data when time_filter is week" do
+  test "#time_filter_results returns the correct data when time_filter is week when sorted by #{DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN}" do
     travel_to @current_time do
       service = DamageCalculatorService.new(**accuracy_caulculator_service_default_params.merge(time_filter: "week", sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN))
       results = service.leaderboard
@@ -93,7 +93,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "#time_filter_results returns the correct data when time_filter is month" do
+  test "#time_filter_results returns the correct data when time_filter is month when sorted by #{DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN}" do
     travel_to @current_time do
       service = DamageCalculatorService.new(**accuracy_caulculator_service_default_params.merge(time_filter: "month", sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN))
       results = service.leaderboard
@@ -104,7 +104,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "#time_filter_results returns the correct data when time_filter is year" do
+  test "#time_filter_results returns the correct data when time_filter is year when sorted by #{DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN}" do
     travel_to @current_time do
       service = DamageCalculatorService.new(**accuracy_caulculator_service_default_params.merge(time_filter: "year", sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN))
       results = service.leaderboard
@@ -122,7 +122,6 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
       limit: 10,
       formatted_table: false,
       sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN,
-      weapons: ["rocket", "shotgun", "railgun"]
     }
   end
 end
