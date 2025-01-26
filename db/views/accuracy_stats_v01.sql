@@ -3,8 +3,8 @@ SELECT
   players.name AS player_name,
   players.steam_id AS steam_id,
   weapons.name AS weapon_name,
-  SUM(weapons.shots) AS total_shots,
-  SUM(weapons.hits) AS total_hits,
+  weapons.shots AS total_shots,
+  weapons.hits AS total_hits,
   stats.created_at AS created_at
 FROM
   weapons
