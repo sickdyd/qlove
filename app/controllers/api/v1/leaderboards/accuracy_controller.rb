@@ -4,11 +4,11 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
   before_action :validate_steam_id, only: :show
 
   def index
-    render_leaderboard(sort_by: AccuracyStat::AVERAGE_ACCURACY_COLUMN)
+    render_leaderboard(sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN)
   end
 
   def show
-    render_leaderboard(sort_by: AccuracyStat::AVERAGE_ACCURACY_COLUMN)
+    render_leaderboard(sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN)
   end
 
   private
@@ -29,7 +29,7 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
   private
 
   def weapons_array
-    return AccuracyStat::ALL_WEAPONS if params[:weapons].blank?
+    return WeaponValidatable::ALL_WEAPONS if params[:weapons].blank?
 
     params[:weapons].split(",").map(&:strip)
   end

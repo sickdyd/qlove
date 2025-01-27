@@ -1,10 +1,10 @@
 class Api::V1::Leaderboards::WinsLossesController < Api::V1::BaseController
   def wins
-    render_leaderboard(sort_by: WinsLossesStat::TOTAL_WINS_COLUMN)
+    render_leaderboard(sort_by: WinsLossesCalculatorService::TOTAL_WINS_COLUMN)
   end
 
   def losses
-    render_leaderboard(sort_by: WinsLossesStat::TOTAL_LOSSES_COLUMN)
+    render_leaderboard(sort_by: WinsLossesCalculatorService::TOTAL_LOSSES_COLUMN)
   end
 
   private

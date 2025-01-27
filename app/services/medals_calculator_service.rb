@@ -1,40 +1,65 @@
 class MedalsCalculatorService < BaseCalculatorService
-  private
+  TOTAL_MEDALS_COLUMN = "total"
 
-  def model
-    MedalsStat
+  attr_reader :time_filter, :timezone, :limit, :formatted_table, :weapons, :medals, :steam_id, :sort_by
+
+  def initialize(time_filter: "day", timezone: "UTC", limit: 10, formatted_table: false, weapons: WeaponValidatable::ALL_WEAPONS, medals: ALL_MEDALS, steam_id: nil, sort_by: "created_at")
+    @time_filter = time_filter
+    @timezone = timezone
+    @limit = limit
+    @formatted_table = formatted_table
+    @weapons = weapons
+    @steam_id = steam_id
+    @sort_by = sort_by
+    @medals = medals
   end
 
-  def time_filter_results
-    query = Medal.joins(stat: :player).where("stats.created_at >= ?", start_time)
+  def leaderboard
+    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
 
-    safe_medals = medals.map { |medal| ActiveRecord::Base.connection.quote_column_name(medal) }
-
-    selected_medals = safe_medals.map { |medal| "SUM(medals.#{medal}) AS #{medal}" }
-    total_column = safe_medals.map { |medal| "SUM(medals.#{medal})" }.join(" + ")
-
-    sanitized_sql = ActiveRecord::Base.sanitize_sql_array([
-      "players.name AS player_name, players.steam_id AS steam_id, #{total_column} AS total_medals, #{selected_medals.join(", ")}"
-    ])
-
-    results = query
-      .select(Arel.sql(sanitized_sql))
-      .group("players.id", "players.name", "players.steam_id")
-      .order(Arel.sql("total_medals DESC"))
+    data = Stat.joins(:player)
+      .select("
+        players.id,
+        players.steam_id,
+        players.name,
+        #{medals_sql},
+        #{total_medals_sql}
+      ")
+      .where("stats.created_at >= ?", start_time)
+      .group("players.id, players.steam_id, players.name")
+      .order("#{sort_by} DESC")
       .limit(limit)
 
-    results.map do |result|
-      player_data = {
-        steam_id: result.steam_id,
-        player_name: result.player_name,
-        total_medals: result.total_medals.to_i
-      }
+    formatted_table ? to_table(headers: headers, data: data, title: table_title) : data
+  end
 
-      safe_medals.each do |medal|
-        player_data[medal.delete(""").to_sym] = result[medal.delete(""")].to_i
-      end
+  private
 
-      player_data
+  def headers
+    ["name", "total"] + medals
+  end
+
+  def medals_sql
+    medals.map do |medal|
+      "COALESCE(SUM(stats.#{medal}), 0) as #{medal}"
+    end.join(", ")
+  end
+
+  def total_medals_sql
+    total_sql_parts = []
+
+    medals.each do |medal|
+      total_sql_parts << "COALESCE(SUM(stats.#{medal}), 0)"
     end
+
+    "#{total_sql_parts.join(' + ')} AS total"
+  end
+
+  def table_title
+    "Most medals for the #{time_filter}"
+  end
+
+  def to_table(headers:, data:, title:)
+    TabletizeService.new(headers: headers, data: data, title: title).table
   end
 end

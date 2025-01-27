@@ -1,31 +1,27 @@
 class DamageCalculatorService < BaseCalculatorService
-  private
+  TOTAL_DAMAGE_DEALT_COLUMN = "total_damage_dealt"
+  TOTAL_DAMAGE_TAKEN_COLUMN = "total_damage_taken"
 
-  def model
-    DamageStat
+  def leaderboard
+    super do |query|
+      query
+        .select("
+          players.id,
+          players.steam_id,
+          players.name,
+          SUM(stats.damage_dealt) as total_damage_dealt,
+          SUM(stats.damage_taken) as total_damage_taken
+        ")
+    end
   end
 
-  def time_filter_results
-    query = Stat.where("stats.created_at >= ?", start_time).joins(:player)
+  private
 
-    results = query
-      .select(
-        "players.name as player_name",
-        "players.steam_id as steam_id",
-        "SUM(stats.damage_dealt) as total_damage_dealt",
-        "SUM(stats.damage_taken) as total_damage_taken"
-      )
-      .group("players.id", "players.name", "players.steam_id")
-      .order("#{sort_by} DESC")
-      .limit(limit)
+  def headers
+    ["name", "damage_dealt", "damage_taken"]
+  end
 
-    results.map do |result|
-      {
-        steam_id: result.steam_id,
-        player_name: result.player_name,
-        total_damage_dealt: result.total_damage_dealt.to_i,
-        total_damage_taken: result.total_damage_taken.to_i
-      }
-    end
+  def table_title
+    "#{sort_by.titleize} for the #{time_filter}"
   end
 end

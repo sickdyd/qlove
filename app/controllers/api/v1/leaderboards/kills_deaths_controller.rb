@@ -1,14 +1,14 @@
 class Api::V1::Leaderboards::KillsDeathsController < Api::V1::BaseController
   def kills
-    render_leaderboard(sort_by: KillsDeathsStat::TOTAL_KILLS_COLUMN)
+    render_leaderboard(sort_by: KillsDeathsCalculatorService::TOTAL_KILLS_COLUMN)
   end
 
   def deaths
-    render_leaderboard(sort_by: KillsDeathsStat::TOTAL_DEATHS_COLUMN)
+    render_leaderboard(sort_by: KillsDeathsCalculatorService::TOTAL_DEATHS_COLUMN)
   end
 
   def kills_deaths_ratio
-    render_leaderboard(sort_by: KillsDeathsStat::KILL_DEATH_RATIO_COLUMN)
+    render_leaderboard(sort_by: KillsDeathsCalculatorService::KILL_DEATH_RATIO_COLUMN)
   end
 
   private

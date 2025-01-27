@@ -1,8 +1,8 @@
 class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
-  before_action :validate_medals
+  include MedalValidatable
 
   def index
-    render_leaderboard(sort_by: MedalsStat::TOTAL_MEDALS_COLUMN)
+    render_leaderboard(sort_by: MedalsCalculatorService::TOTAL_MEDALS_COLUMN)
   end
 
   private
@@ -18,16 +18,8 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
       )
       .with_defaults(
         COMMON_PARAMS_DEFAULTS
-          .merge(medals: MedalsStat::ALL_MEDALS.join(",")),
+          .merge(medals: MedalValidatable::ALL_MEDALS.join(",")),
       )
-  end
-
-  def validate_medals
-    return if medals_params[:medals].blank?
-
-    unless (medals_params[:medals].to_s.split(",") - MedalsStat::ALL_MEDALS).empty?
-      render json: { error: "Invalid medals", valid_medals: MedalsStat::ALL_MEDALS }, status: :bad_request
-    end
   end
 
   def render_leaderboard(sort_by:)

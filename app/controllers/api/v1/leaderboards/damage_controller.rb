@@ -1,10 +1,10 @@
 class Api::V1::Leaderboards::DamageController < Api::V1::BaseController
   def damage_dealt
-    render_leaderboard(sort_by: DamageStat::TOTAL_DAMAGE_DEALT_COLUMN)
+    render_leaderboard(sort_by: DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN)
   end
 
   def damage_taken
-    render_leaderboard(sort_by: DamageStat::TOTAL_DAMAGE_TAKEN_COLUMN)
+    render_leaderboard(sort_by: DamageCalculatorService::TOTAL_DAMAGE_TAKEN_COLUMN)
   end
 
   private

@@ -1,45 +1,39 @@
 class AccuracyCalculatorService < BaseCalculatorService
-  private
+  AVERAGE_ACCURACY_COLUMN = "avg".freeze
 
-  def time_filter_results
-    average_header = AccuracyStat::SHORTENED_HEADERS[:average_accuracy].to_sym
-    query = steam_id.present? ? AccuracyStat.where(steam_id: steam_id) : AccuracyStat
+  def leaderboard
+    super do |query|
+      query = query.where("players.steam_id = ?", steam_id) if steam_id.present?
 
-    query = query.where(created_at: start_time..Time.current)
-      .where(weapon_name: weapons)
-      .group(:steam_id, :weapon_name, :player_name)
-      .order(:steam_id)
-
-    data = query.pluck(:steam_id, :player_name, :weapon_name, "SUM(total_shots)", "SUM(total_hits)").map do |steam_id, player_name, weapon_name, total_shots, total_hits|
-      accuracy = total_shots.zero? ? AccuracyStat::UNAVAILABLE_ACCURACY : (total_hits.to_f / total_shots.to_f * 100).round
-
-      {
-        steam_id: steam_id,
-        player_name: player_name,
-        weapon_name: weapon_name,
-        accuracy: accuracy
-      }
+      query
+        .select("
+          players.id,
+          players.steam_id,
+          players.name,
+          ROUND(SUM(stats.game_average_accuracy) / COUNT(CASE WHEN stats.game_average_accuracy IS NOT NULL THEN 1 END), 0)::INTEGER AS avg,
+          #{weapons_accuracy_sql}
+        ")
     end
-
-    transformed_data = data.group_by { |entry| entry[:steam_id] }.map do |steam_id, entries|
-      player_name = entries.first[:player_name]
-
-      weapon_data = entries.each_with_object({}) do |entry, hash|
-        hash[AccuracyStat::SHORTENED_WEAPON_NAMES[entry[:weapon_name].to_s].to_sym] = entry[:accuracy]
-      end
-
-      valid_accuracies = weapon_data.values.reject { |v| v == AccuracyStat::UNAVAILABLE_ACCURACY }
-      avg_accuracy = valid_accuracies.any? ? (valid_accuracies.sum / valid_accuracies.size).round : AccuracyStat::UNAVAILABLE_ACCURACY
-
-      { steam_id: steam_id, player_name: player_name }
-        .merge(weapon_data)
-        .merge(average_header => avg_accuracy)
-    end
-
-    transformed_data.sort_by { |entry| entry[average_header] == "-" ? -Float::INFINITY : entry[average_header] }.reverse.take(limit.to_i)
   end
 
-  def model
-    AccuracyStat
+  private
+
+  def short_weapon_name(weapon)
+    WeaponValidatable::SHORTENED_WEAPON_NAMES[weapon]
+  end
+
+  def weapons_accuracy_sql
+    weapons.map do |weapon|
+      short_name = short_weapon_name(weapon)
+      "COALESCE(ROUND(SUM(stats.#{short_name}_accuracy) / NULLIF(COUNT(stats.#{short_name}_accuracy), 0), 0)::INTEGER::TEXT, '-') AS #{short_name}"
+    end.join(", ")
+  end
+
+  def headers
+    ["name", "avg"] + weapons.map { |weapon| short_weapon_name(weapon) }
+  end
+
+  def table_title
+    "Best Accuracy for the #{time_filter}"
   end
 end
