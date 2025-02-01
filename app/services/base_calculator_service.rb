@@ -44,11 +44,11 @@ class BaseCalculatorService
   end
 
   def headers
-    raise NotImplementedError, "You must add the headers method to the subclass"
+    self.class::HEADERS
   end
 
   def table_title
-    raise NotImplementedError, "You must add the table_title method to the subclass"
+    "#{sort_by.titleize} for the #{time_filter}"
   end
 
   def shortened_weapon_names(weapons)

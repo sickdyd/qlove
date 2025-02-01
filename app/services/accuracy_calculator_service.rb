@@ -82,8 +82,4 @@ class AccuracyCalculatorService < BaseCalculatorService
   def headers
     [ "name", "avg" ] + @weapons
   end
-
-  def table_title
-    "Best Accuracy for the #{time_filter}"
-  end
 end

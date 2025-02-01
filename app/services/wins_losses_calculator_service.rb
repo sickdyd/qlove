@@ -2,6 +2,8 @@ class WinsLossesCalculatorService < BaseCalculatorService
   TOTAL_WINS_COLUMN = "total_wins"
   TOTAL_LOSSES_COLUMN = "total_losses"
 
+  HEADERS = [ "name", TOTAL_WINS_COLUMN, TOTAL_LOSSES_COLUMN ]
+
   def leaderboard
     super do |query|
       query

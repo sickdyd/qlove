@@ -3,6 +3,8 @@ class KillsDeathsCalculatorService < BaseCalculatorService
   TOTAL_DEATHS_COLUMN = "total_deaths"
   KILL_DEATH_RATIO_COLUMN = "kill_death_ratio"
 
+  HEADERS = [ "name", TOTAL_KILLS_COLUMN, TOTAL_DEATHS_COLUMN, KILL_DEATH_RATIO_COLUMN ]
+
   def leaderboard
     super do |query|
       query
