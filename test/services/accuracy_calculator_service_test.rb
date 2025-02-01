@@ -45,7 +45,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     travel_back
   end
 
-  test "daily accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
+  test "daily accuracy" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params)
       data = @service.leaderboard
@@ -58,7 +58,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "weekly accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
+  test "weekly accuracy" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "week", limit: 4))
       data = @service.leaderboard
@@ -71,7 +71,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "monthly accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
+  test "monthly accuracy" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "month", limit: 4))
       data = @service.leaderboard
@@ -84,7 +84,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "all time accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
+  test "all time accuracy" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "all_time", limit: 4))
       data = @service.leaderboard

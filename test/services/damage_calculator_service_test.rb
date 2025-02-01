@@ -45,7 +45,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     travel_back
   end
 
-  test "daily damage dealt, sorted by #{DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN}" do
+  test "daily damage dealt" do
     travel_to @current_time do
       @service = DamageCalculatorService.new(**damage_calculator_service_default_params)
       data = @service.leaderboard
@@ -58,7 +58,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "daily damage taken, sorted by #{DamageCalculatorService::TOTAL_DAMAGE_TAKEN_COLUMN}" do
+  test "daily damage taken" do
     travel_to @current_time do
       @service = DamageCalculatorService.new(**damage_calculator_service_default_params
         .merge(sort_by: DamageCalculatorService::TOTAL_DAMAGE_TAKEN_COLUMN)
@@ -73,7 +73,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "weekly damage dealt, sorted by #{DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN}" do
+  test "weekly damage dealt" do
     travel_to @current_time do
       @service = DamageCalculatorService.new(**damage_calculator_service_default_params
         .merge(time_filter: "week")
@@ -88,7 +88,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "weekly damage taken, sorted by #{DamageCalculatorService::TOTAL_DAMAGE_TAKEN_COLUMN}" do
+  test "weekly damage taken" do
     travel_to @current_time do
       @service = DamageCalculatorService.new(**damage_calculator_service_default_params
         .merge(
@@ -106,7 +106,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "monthly damage dealt, sorted by #{DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN}" do
+  test "monthly damage dealt" do
     travel_to @current_time do
       @service = DamageCalculatorService.new(**damage_calculator_service_default_params
         .merge(time_filter: "month")
@@ -121,7 +121,7 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-  test "monthly damage taken, sorted by #{DamageCalculatorService::TOTAL_DAMAGE_TAKEN_COLUMN}" do
+  test "monthly damage taken" do
     travel_to @current_time do
       @service = DamageCalculatorService.new(**damage_calculator_service_default_params
         .merge(
