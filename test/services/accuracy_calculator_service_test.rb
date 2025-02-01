@@ -45,80 +45,52 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     travel_back
   end
 
-  test "the first result is the player with the best accuracy for the day" do
+  test "daily accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params)
       data = @service.leaderboard
 
       assert_equal "Player One", data.first.name
       assert_equal 35, data.first.avg.to_i
-    end
-  end
-
-  test "the last result is the player with the worst accuracy for the day" do
-    travel_to @current_time do
-      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params)
-      data = @service.leaderboard
 
       assert_equal "Player Three", data.last.name
       assert_equal 15, data.last.avg.to_i
     end
   end
 
-  test "the first result is the player with the best accuracy for the week" do
+  test "weekly accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "week", limit: 4))
       data = @service.leaderboard
 
       assert_equal "Player Two", data.first.name
       assert_equal 38, data.first.avg.to_i
-    end
-  end
-
-  test "the last result is the player with the worst accuracy for the week" do
-    travel_to @current_time do
-      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "week", limit: 4))
-      data = @service.leaderboard
 
       assert_equal "Player Three", data.last.name
       assert_equal 12, data.last.avg.to_i
     end
   end
 
-  test "the first result is the player with the best accuracy for the month" do
+  test "monthly accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "month", limit: 4))
       data = @service.leaderboard
 
       assert_equal "Player Two", data.first.name
       assert_equal 33, data.first.avg.to_i
-    end
-  end
-
-  test "the last result is the player with the worst accuracy for the month" do
-    travel_to @current_time do
-      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "month", limit: 4))
-      data = @service.leaderboard
 
       assert_equal "Player Three", data.last.name
       assert_equal 13, data.last.avg.to_i
     end
   end
 
-  test "the first result is the player with the best accuracy for all time" do
+  test "all time accuracy, sorted by #{AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN}" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "all_time", limit: 4))
       data = @service.leaderboard
 
       assert_equal "Player Two", data.first.name
       assert_equal 31, data.first.avg.to_i
-    end
-  end
-
-  test "the last result is the player with the worst accuracy for all time" do
-    travel_to @current_time do
-      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "all_time", limit: 4))
-      data = @service.leaderboard
 
       assert_equal "Player Three", data.last.name
       assert_equal 14, data.last.avg.to_i
@@ -161,7 +133,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
         sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN,
         time_filter: "day",
         limit: 3,
-    )
+      )
   end
 
   def zeroed_accuracies
