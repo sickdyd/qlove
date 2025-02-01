@@ -18,7 +18,7 @@ class DamageCalculatorService < BaseCalculatorService
   private
 
   def headers
-    ["name", "damage_dealt", "damage_taken"]
+    [ "name", "damage_dealt", "damage_taken" ]
   end
 
   def table_title

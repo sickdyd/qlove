@@ -36,7 +36,7 @@ class MedalsCalculatorService < BaseCalculatorService
   private
 
   def headers
-    ["name", "total"] + medals
+    [ "name", "total" ] + medals
   end
 
   def medals_sql
