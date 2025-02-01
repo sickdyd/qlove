@@ -1,19 +1,17 @@
 class BaseCalculatorService
   attr_reader :time_filter, :timezone, :limit, :formatted_table, :weapons, :steam_id, :sort_by
 
-  def initialize(time_filter: "day", timezone: "UTC", limit: 10, formatted_table: false, weapons: WeaponValidatable::ALL_WEAPONS, steam_id: nil, sort_by: "created_at")
+  def initialize(time_filter: "year", timezone: "UTC", limit: 10, formatted_table: false, weapons: WeaponValidatable::ALL_WEAPONS, steam_id: nil, sort_by: "players.created_at")
     @time_filter = time_filter
     @timezone = timezone
     @limit = limit
     @formatted_table = formatted_table
-    @weapons = weapons
+    @weapons = shortened_weapon_names(weapons)
     @steam_id = steam_id
     @sort_by = sort_by
   end
 
   def leaderboard
-    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
-
     query = Stat.joins(:player)
 
     unless block_given?
@@ -25,15 +23,39 @@ class BaseCalculatorService
     data = query
       .where("stats.created_at >= ?", start_time)
       .group("players.id, players.steam_id, players.name")
-      .order("#{sort_by} DESC")
+      .order("#{sort_by} DESC NULLS LAST")
       .limit(limit)
 
-    formatted_table ? to_table(headers: headers, data: data, title: table_title) : data
+    handle_query_results(data)
   end
 
   private
 
+  def handle_query_results(data)
+    formatted_table ? to_table(headers: headers, data: data, title: table_title) : data
+  end
+
+  def start_time
+    TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
+  end
+
   def to_table(headers:, data:, title:)
     TabletizeService.new(headers: headers, data: data, title: title).table
+  end
+
+  def headers
+    raise NotImplementedError, "You must add the headers method to the subclass"
+  end
+
+  def table_title
+    raise NotImplementedError, "You must add the table_title method to the subclass"
+  end
+
+  def shortened_weapon_names(weapons)
+    weapons.map { |weapon| short_weapon_name(weapon) }
+  end
+
+  def short_weapon_name(weapon)
+    WeaponValidatable::SHORTENED_WEAPON_NAMES[weapon]
   end
 end

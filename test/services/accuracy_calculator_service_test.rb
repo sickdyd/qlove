@@ -6,102 +6,165 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     player2 = create(:player, steam_id: "STEAM_2", name: "Player Two")
     player3 = create(:player, steam_id: "STEAM_3", name: "Player Three")
     player4 = create(:player, steam_id: "STEAM_4", name: "Player Four")
-    player5 = create(:player, steam_id: "STEAM_5", name: "Player Five")
 
-    @current_time = Date.new(2024, 12, 20)
+    @current_time = Time.new(2024, 12, 31).end_of_day
 
     travel_to @current_time do
-      stat1 = create(:stat, player: player1, created_at: Time.current)
-      stat2 = create(:stat, player: player2, created_at: 3.day.ago)
-      stat3 = create(:stat, player: player1, created_at: 2.day.ago)
-      stat4 = create(:stat, player: player3, created_at: Time.current)
-      stat5 = create(:stat, player: player4, created_at: 2.week.ago)
-      stat6 = create(:stat, player: player5, created_at: 2.month.ago)
+      3.times do
+        within_the_day = @current_time - 5.hours
+        # Need to make sure this is within the current week, which starts on Sunday 29th
+        # This will set the day to Tuesday
+        within_the_week = @current_time - 1.day
+        within_the_month = @current_time - 2.weeks
+        all_time = @current_time - 3.months
 
-      create(:weapon, stat: stat1, name: "rocket", shots: 100, hits: 50)
-      create(:weapon, stat: stat1, name: "shotgun", shots: 100, hits: 50)
-      create(:weapon, stat: stat1, name: "railgun", shots: 100, hits: 50)
+        create(:stat, player: player1, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
+        create(:stat, player: player2, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
+        create(:stat, player: player3, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
+        create(:stat, player: player4, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 5))
 
-      create(:weapon, stat: stat2, name: "rocket", shots: 100, hits: 70)
-      create(:weapon, stat: stat2, name: "shotgun", shots: 100, hits: 70)
-      create(:weapon, stat: stat2, name: "railgun", shots: 100, hits: 70)
+        create(:stat, player: player1, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 20))
+        create(:stat, player: player2, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 70, sg_accuracy: 30))
+        create(:stat, player: player3, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 5, sg_accuracy: 15))
+        create(:stat, player: player4, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 60, sg_accuracy: 25))
 
-      create(:weapon, stat: stat3, name: "rocket", shots: 100, hits: 20)
-      create(:weapon, stat: stat3, name: "shotgun", shots: 100, hits: 20)
-      create(:weapon, stat: stat3, name: "railgun", shots: 100, hits: 20)
+        create(:stat, player: player1, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
+        create(:stat, player: player2, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
+        create(:stat, player: player3, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
+        create(:stat, player: player4, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 5))
 
-      create(:weapon, stat: stat4, name: "rocket", shots: 100, hits: 10)
-      create(:weapon, stat: stat4, name: "shotgun", shots: 100, hits: 10)
-      create(:weapon, stat: stat4, name: "railgun", shots: 100, hits: 10)
-
-      create(:weapon, stat: stat5, name: "rocket", shots: 100, hits: 80)
-      create(:weapon, stat: stat5, name: "shotgun", shots: 100, hits: 80)
-      create(:weapon, stat: stat5, name: "railgun", shots: 100, hits: 80)
-
-      create(:weapon, stat: stat6, name: "rocket", shots: 100, hits: 90)
-      create(:weapon, stat: stat6, name: "shotgun", shots: 100, hits: 90)
-      create(:weapon, stat: stat6, name: "railgun", shots: 100, hits: 90)
+        create(:stat, player: player1, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
+        create(:stat, player: player2, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
+        create(:stat, player: player3, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
+        create(:stat, player: player4, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 5))
+      end
     end
-
-    AccuracyStat.refresh
   end
 
   teardown do
     travel_back
   end
 
-  test "#time_filter_results returns the correct data" do
+  test "the first result is the player with the best accuracy for the day" do
     travel_to @current_time do
-      service = AccuracyCalculatorService.new(**accuracy_caulculator_service_default_params)
-      results = service.leaderboard
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params)
+      data = @service.leaderboard
 
-      assert_equal 2, results.size
-      assert_equal "STEAM_1", results.first[:steam_id]
-      assert_equal 50, results.first[AccuracyStat::SHORTENED_HEADERS[:average_accuracy].to_sym]
+      assert_equal "Player One", data.first.name
+      assert_equal 35, data.first.avg.to_i
     end
   end
 
-  test "#time_filter_results returns the correct data when time_filter is week" do
+  test "the last result is the player with the worst accuracy for the day" do
     travel_to @current_time do
-      service = AccuracyCalculatorService.new(**accuracy_caulculator_service_default_params.merge(time_filter: "week"))
-      results = service.leaderboard
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params)
+      data = @service.leaderboard
 
-      assert_equal 3, results.size
-      assert_equal "STEAM_2", results.first[:steam_id]
-      assert_equal 70, results.first[AccuracyStat::SHORTENED_HEADERS[:average_accuracy].to_sym]
+      assert_equal "Player Three", data.last.name
+      assert_equal 15, data.last.avg.to_i
     end
   end
 
-  test "#time_filter_results returns the correct data when time_filter is month" do
+  test "the first result is the player with the best accuracy for the week" do
     travel_to @current_time do
-      service = AccuracyCalculatorService.new(**accuracy_caulculator_service_default_params.merge(time_filter: "month"))
-      results = service.leaderboard
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "week", limit: 4))
+      data = @service.leaderboard
 
-      assert_equal 4, results.size
-      assert_equal "STEAM_4", results.first[:steam_id]
-      assert_equal 80, results.first[AccuracyStat::SHORTENED_HEADERS[:average_accuracy].to_sym]
+      assert_equal "Player Two", data.first.name
+      assert_equal 38, data.first.avg.to_i
     end
   end
 
-  test "#time_filter_results returns the correct data when time_filter is year" do
+  test "the last result is the player with the worst accuracy for the week" do
     travel_to @current_time do
-      service = AccuracyCalculatorService.new(**accuracy_caulculator_service_default_params.merge(time_filter: "year"))
-      results = service.leaderboard
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "week", limit: 4))
+      data = @service.leaderboard
 
-      assert_equal 5, results.size
-      assert_equal "STEAM_5", results.first[:steam_id]
-      assert_equal 90, results.first[AccuracyStat::SHORTENED_HEADERS[:average_accuracy].to_sym]
+      assert_equal "Player Three", data.last.name
+      assert_equal 12, data.last.avg.to_i
     end
   end
 
-  def accuracy_caulculator_service_default_params
-    {
-      time_filter: "day",
-      timezone: "UTC",
-      limit: 10,
-      formatted_table: false,
-      sort_by: "average_accuracy",
-      weapons: [ "rocket", "shotgun", "railgun" ]
-    }
+  test "the first result is the player with the best accuracy for the month" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "month", limit: 4))
+      data = @service.leaderboard
+
+      assert_equal "Player Two", data.first.name
+      assert_equal 33, data.first.avg.to_i
+    end
+  end
+
+  test "the last result is the player with the worst accuracy for the month" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "month", limit: 4))
+      data = @service.leaderboard
+
+      assert_equal "Player Three", data.last.name
+      assert_equal 13, data.last.avg.to_i
+    end
+  end
+
+  test "the first result is the player with the best accuracy for all time" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "all_time", limit: 4))
+      data = @service.leaderboard
+
+      assert_equal "Player Two", data.first.name
+      assert_equal 31, data.first.avg.to_i
+    end
+  end
+
+  test "the last result is the player with the worst accuracy for all time" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "all_time", limit: 4))
+      data = @service.leaderboard
+
+      assert_equal "Player Three", data.last.name
+      assert_equal 14, data.last.avg.to_i
+    end
+  end
+
+  test "leaderboard respects the limit parameter" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(limit: 2))
+      data = @service.leaderboard
+
+      assert_equal 2, data.size
+    end
+  end
+
+  test "leaderboard handles empty results without error" do
+    travel_to @current_time + 10.years do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params)
+      data = @service.leaderboard
+
+      assert_equal [], data
+    end
+  end
+
+  test "returns a single entry given a steam_id" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(steam_id: "STEAM_1"))
+      data = @service.leaderboard
+
+      assert_equal 1, data.size
+      assert_equal "Player One", data.first.name
+      assert_equal 35, data.first.avg.to_i
+    end
+  end
+
+  def accuracy_calculator_service_default_params
+    Api::V1::BaseController::COMMON_PARAMS_DEFAULTS
+      .merge(
+        weapons: WeaponValidatable::ALL_WEAPONS,
+        sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN,
+        time_filter: "day",
+        limit: 3,
+    )
+  end
+
+  def zeroed_accuracies
+    WeaponValidatable::ALL_WEAPONS.index_with { nil }.transform_keys { |weapon| "#{WeaponValidatable::SHORTENED_WEAPON_NAMES[weapon]}_accuracy" }
   end
 end

@@ -4,11 +4,11 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
   before_action :validate_steam_id, only: :show
 
   def index
-    render_leaderboard(sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN)
+    render_leaderboard
   end
 
   def show
-    render_leaderboard(sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN)
+    render_leaderboard
   end
 
   private
@@ -45,8 +45,8 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
     end
   end
 
-  def render_leaderboard(sort_by:)
-    params = accuracy_params.to_h.symbolize_keys.merge(sort_by: sort_by)
+  def render_leaderboard
+    params = accuracy_params.to_h.symbolize_keys
     data = AccuracyCalculatorService.new(**params.merge(weapons: weapons_array)).leaderboard
     render json: { data: data }
   end
