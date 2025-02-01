@@ -41,18 +41,15 @@ class MedalsCalculatorService < BaseCalculatorService
 
   def medals_sql
     medals.map do |medal|
-      "COALESCE(SUM(stats.#{medal}), 0) as #{medal}"
+      "SUM(stats.#{medal}) FILTER (WHERE stats.#{medal} IS NOT NULL) AS #{medal}"
     end.join(", ")
   end
 
   def total_medals_sql
-    total_sql_parts = []
+    medals_filter = medals.map { |medal| "stats.#{medal} IS NOT NULL" }.join(" OR ")
+    medals_sum = medals.map { |medal| "stats.#{medal}" }.join(" + ")
 
-    medals.each do |medal|
-      total_sql_parts << "COALESCE(SUM(stats.#{medal}), 0)"
-    end
-
-    "#{total_sql_parts.join(' + ')} AS total"
+    "SUM(#{medals_sum}) FILTER (WHERE #{medals_filter}) AS total"
   end
 
   def table_title
