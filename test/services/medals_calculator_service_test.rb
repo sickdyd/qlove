@@ -150,7 +150,7 @@ class MedalsCalculatorServiceTest < ActiveSupport::TestCase
     Api::V1::BaseController::COMMON_PARAMS_DEFAULTS
       .merge(
         sort_by: MedalsCalculatorService::TOTAL_MEDALS_COLUMN,
-        medals: ["accuracy", "excellent"],
+        medals: [ "accuracy", "excellent" ],
         time_filter: "day",
         limit: 3,
       )

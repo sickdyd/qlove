@@ -265,11 +265,6 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-          # player1: 201 + 75 = 276 kills, 129 + 63 = 192 deaths, 276 / 192 = 1.44
-        # player2: 279 + 105 = 384 kills, 186 + 75 = 261 deaths, 384 / 261 = 1.47
-        # player3: 399 + 135 = 534 kills, 243 + 90 = 333 deaths, 534 / 333 = 1.6
-        # player4: 480 + 165 = 645 kills, 267 + 105 = 372 deaths, 645 / 372 = 1.73
-
   test "all time kills" do
     travel_to @current_time do
       @service = KillsDeathsCalculatorService.new(**kills_deaths_calculator_service_default_params

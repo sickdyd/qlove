@@ -146,7 +146,7 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
   def accuracy_calculator_service_default_params
     Api::V1::BaseController::COMMON_PARAMS_DEFAULTS
       .merge(
-        weapons: ["lightning", "shotgun"],
+        weapons: [ "lightning", "shotgun" ],
         sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN,
         time_filter: "day",
         limit: 3,
