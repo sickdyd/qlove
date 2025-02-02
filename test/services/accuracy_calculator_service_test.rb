@@ -9,15 +9,13 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
 
     @current_time = Time.new(2024, 12, 31).end_of_day
 
+    within_the_day = @current_time - 5.hours
+    within_the_week = @current_time - 1.day
+    within_the_month = @current_time - 2.weeks
+    all_time = @current_time - 3.months
+
     travel_to @current_time do
       3.times do
-        within_the_day = @current_time - 5.hours
-        # Need to make sure this is within the current week, which starts on Sunday 29th
-        # This will set the day to Tuesday
-        within_the_week = @current_time - 1.day
-        within_the_month = @current_time - 2.weeks
-        all_time = @current_time - 3.months
-
         create(:stat, player: player1, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
         create(:stat, player: player2, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
         create(:stat, player: player3, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
