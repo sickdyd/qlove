@@ -39,7 +39,7 @@ class AccuracyCalculatorService < BaseCalculatorService
           NULLIF(
             #{weapons_average_denominator_sql}, 0
           ), 0
-        ) AS #{AVERAGE_ACCURACY_COLUMN},
+        )::INTEGER AS #{AVERAGE_ACCURACY_COLUMN},
         #{select_weapons_sql}
       ")
       .order("#{AVERAGE_ACCURACY_COLUMN} DESC NULLS LAST")
