@@ -21,46 +21,46 @@ class MedalsCalculatorServiceTest < ActiveSupport::TestCase
         # player2 30 * 3 + 20 * 3 = 150
         # player3 20 * 3 + 10 * 3 = 90
         # player4 10 * 3 + 5 * 3 = 45
-        create(:stat, player: player1, created_at: within_the_day, **zeroed_medals.merge(accuracy: 40, excellent: 30))
-        create(:stat, player: player2, created_at: within_the_day, **zeroed_medals.merge(accuracy: 30, excellent: 20))
-        create(:stat, player: player3, created_at: within_the_day, **zeroed_medals.merge(accuracy: 20, excellent: 10))
-        create(:stat, player: player4, created_at: within_the_day, **zeroed_medals.merge(accuracy: 10, excellent: 5))
+        create(:stat, player: player1, created_at: within_the_day, accuracy: 40, excellent: 30)
+        create(:stat, player: player2, created_at: within_the_day, accuracy: 30, excellent: 20)
+        create(:stat, player: player3, created_at: within_the_day, accuracy: 20, excellent: 10)
+        create(:stat, player: player4, created_at: within_the_day, accuracy: 10, excellent: 5)
 
         # player1 210 + 10 * 3 + 20 * 3 = 300
         # player2 150 + 70 * 3 + 30 * 3 = 450
         # player3 90 + 5 * 3 + 15 * 3 = 150
         # player4 45 + 60 * 3 + 27 * 3 = 306
-        create(:stat, player: player1, created_at: within_the_week, **zeroed_medals.merge(accuracy: 10, excellent: 20))
-        create(:stat, player: player2, created_at: within_the_week, **zeroed_medals.merge(accuracy: 70, excellent: 30))
-        create(:stat, player: player3, created_at: within_the_week, **zeroed_medals.merge(accuracy: 5, excellent: 15))
-        create(:stat, player: player4, created_at: within_the_week, **zeroed_medals.merge(accuracy: 60, excellent: 27))
+        create(:stat, player: player1, created_at: within_the_week, accuracy: 10, excellent: 20)
+        create(:stat, player: player2, created_at: within_the_week, accuracy: 70, excellent: 30)
+        create(:stat, player: player3, created_at: within_the_week, accuracy: 5, excellent: 15)
+        create(:stat, player: player4, created_at: within_the_week, accuracy: 60, excellent: 27)
 
         # player1 300 + 40 * 3 + 30 * 3 = 510
         # player2 450 + 30 * 3 + 20 * 3 = 600
         # player3 150 + 20 * 3 + 10 * 3 = 240
         # player4 306 + 10 * 3 + 5 * 3 = 351
-        create(:stat, player: player1, created_at: within_the_month, **zeroed_medals.merge(accuracy: 40, excellent: 30))
-        create(:stat, player: player2, created_at: within_the_month, **zeroed_medals.merge(accuracy: 30, excellent: 20))
-        create(:stat, player: player3, created_at: within_the_month, **zeroed_medals.merge(accuracy: 20, excellent: 10))
-        create(:stat, player: player4, created_at: within_the_month, **zeroed_medals.merge(accuracy: 10, excellent: 5))
+        create(:stat, player: player1, created_at: within_the_month, accuracy: 40, excellent: 30)
+        create(:stat, player: player2, created_at: within_the_month, accuracy: 30, excellent: 20)
+        create(:stat, player: player3, created_at: within_the_month, accuracy: 20, excellent: 10)
+        create(:stat, player: player4, created_at: within_the_month, accuracy: 10, excellent: 5)
 
         # player1 510 + 20 * 3 + 20 * 3 = 630
         # player2 600 + 30 * 3 + 10 * 3 = 720
         # player3 240 + 10 * 3 + 20 * 3 = 330
         # player4 351 + 10 * 3 + 15 * 3 = 426
-        create(:stat, player: player1, created_at: within_the_year, **zeroed_medals.merge(accuracy: 20, excellent: 20))
-        create(:stat, player: player2, created_at: within_the_year, **zeroed_medals.merge(accuracy: 30, excellent: 10))
-        create(:stat, player: player3, created_at: within_the_year, **zeroed_medals.merge(accuracy: 10, excellent: 20))
-        create(:stat, player: player4, created_at: within_the_year, **zeroed_medals.merge(accuracy: 10, excellent: 15))
+        create(:stat, player: player1, created_at: within_the_year, accuracy: 20, excellent: 20)
+        create(:stat, player: player2, created_at: within_the_year, accuracy: 30, excellent: 10)
+        create(:stat, player: player3, created_at: within_the_year, accuracy: 10, excellent: 20)
+        create(:stat, player: player4, created_at: within_the_year, accuracy: 10, excellent: 15)
 
         # player1 630 + 40 * 3 + 30 * 3 = 840
         # player2 720 + 30 * 3 + 20 * 3 = 870
         # player3 330 + 20 * 3 + 10 * 3 = 420
         # player4 426 + 10 * 3 + 5 * 3 = 471
-        create(:stat, player: player1, created_at: all_time, **zeroed_medals.merge(accuracy: 40, excellent: 30))
-        create(:stat, player: player2, created_at: all_time, **zeroed_medals.merge(accuracy: 30, excellent: 20))
-        create(:stat, player: player3, created_at: all_time, **zeroed_medals.merge(accuracy: 20, excellent: 10))
-        create(:stat, player: player4, created_at: all_time, **zeroed_medals.merge(accuracy: 10, excellent: 5))
+        create(:stat, player: player1, created_at: all_time, accuracy: 40, excellent: 30)
+        create(:stat, player: player2, created_at: all_time, accuracy: 30, excellent: 20)
+        create(:stat, player: player3, created_at: all_time, accuracy: 20, excellent: 10)
+        create(:stat, player: player4, created_at: all_time, accuracy: 10, excellent: 5)
       end
     end
   end
@@ -154,9 +154,5 @@ class MedalsCalculatorServiceTest < ActiveSupport::TestCase
         time_filter: "day",
         limit: 3,
       )
-  end
-
-  def zeroed_medals
-    MedalValidatable::ALL_MEDALS.index_with(nil)
   end
 end

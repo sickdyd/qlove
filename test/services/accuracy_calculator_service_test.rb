@@ -12,29 +12,35 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     within_the_day = @current_time - 5.hours
     within_the_week = @current_time - 1.day
     within_the_month = @current_time - 2.weeks
-    all_time = @current_time - 3.months
+    within_the_year = @current_time - 3.months
+    all_time = @current_time - 3.years
 
     travel_to @current_time do
       3.times do
-        create(:stat, player: player1, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
-        create(:stat, player: player2, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
-        create(:stat, player: player3, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
-        create(:stat, player: player4, created_at: within_the_day, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 5))
+        create(:stat, player: player1, created_at: within_the_day, lg_accuracy: 40, sg_accuracy: 30)
+        create(:stat, player: player2, created_at: within_the_day, lg_accuracy: 30, sg_accuracy: 20)
+        create(:stat, player: player3, created_at: within_the_day, lg_accuracy: 20, sg_accuracy: 10)
+        create(:stat, player: player4, created_at: within_the_day, lg_accuracy: 10, sg_accuracy: 5)
 
-        create(:stat, player: player1, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 20))
-        create(:stat, player: player2, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 70, sg_accuracy: 30))
-        create(:stat, player: player3, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 5, sg_accuracy: 15))
-        create(:stat, player: player4, created_at: within_the_week, **zeroed_accuracies.merge(lg_accuracy: 60, sg_accuracy: 25))
+        create(:stat, player: player1, created_at: within_the_week, lg_accuracy: 10, sg_accuracy: 20)
+        create(:stat, player: player2, created_at: within_the_week, lg_accuracy: 70, sg_accuracy: 30)
+        create(:stat, player: player3, created_at: within_the_week, lg_accuracy: 5, sg_accuracy: 15)
+        create(:stat, player: player4, created_at: within_the_week, lg_accuracy: 60, sg_accuracy: 25)
 
-        create(:stat, player: player1, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
-        create(:stat, player: player2, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
-        create(:stat, player: player3, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
-        create(:stat, player: player4, created_at: within_the_month, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 5))
+        create(:stat, player: player1, created_at: within_the_month, lg_accuracy: 40, sg_accuracy: 30)
+        create(:stat, player: player2, created_at: within_the_month, lg_accuracy: 30, sg_accuracy: 20)
+        create(:stat, player: player3, created_at: within_the_month, lg_accuracy: 20, sg_accuracy: 10)
+        create(:stat, player: player4, created_at: within_the_month, lg_accuracy: 10, sg_accuracy: 5)
 
-        create(:stat, player: player1, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 40, sg_accuracy: 30))
-        create(:stat, player: player2, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 30, sg_accuracy: 20))
-        create(:stat, player: player3, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 20, sg_accuracy: 10))
-        create(:stat, player: player4, created_at: all_time, **zeroed_accuracies.merge(lg_accuracy: 10, sg_accuracy: 5))
+        create(:stat, player: player1, created_at: within_the_year, lg_accuracy: 40, sg_accuracy: 30)
+        create(:stat, player: player2, created_at: within_the_year, lg_accuracy: 30, sg_accuracy: 20)
+        create(:stat, player: player3, created_at: within_the_year, lg_accuracy: 20, sg_accuracy: 10)
+        create(:stat, player: player4, created_at: within_the_year, lg_accuracy: 10, sg_accuracy: 5)
+
+        create(:stat, player: player1, created_at: all_time, lg_accuracy: 40, sg_accuracy: 30)
+        create(:stat, player: player2, created_at: all_time, lg_accuracy: 30, sg_accuracy: 20)
+        create(:stat, player: player3, created_at: all_time, lg_accuracy: 20, sg_accuracy: 10)
+        create(:stat, player: player4, created_at: all_time, lg_accuracy: 10, sg_accuracy: 5)
       end
     end
   end
@@ -82,12 +88,25 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
+  test "yearly accuracy" do
+    travel_to @current_time do
+      @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "year", limit: 4))
+      data = @service.leaderboard
+
+      assert_equal "Player Two", data.first.name
+      assert_equal 31, data.first.avg.to_i
+
+      assert_equal "Player Three", data.last.name
+      assert_equal 14, data.last.avg.to_i
+    end
+  end
+
   test "all time accuracy" do
     travel_to @current_time do
       @service = AccuracyCalculatorService.new(**accuracy_calculator_service_default_params.merge(time_filter: "all_time", limit: 4))
       data = @service.leaderboard
 
-      assert_equal "Player Two", data.first.name
+      assert_equal "Player One", data.first.name
       assert_equal 31, data.first.avg.to_i
 
       assert_equal "Player Three", data.last.name
@@ -127,14 +146,10 @@ class AccuracyCalculatorServiceTest < ActiveSupport::TestCase
   def accuracy_calculator_service_default_params
     Api::V1::BaseController::COMMON_PARAMS_DEFAULTS
       .merge(
-        weapons: WeaponValidatable::ALL_WEAPONS,
+        weapons: ["lightning", "shotgun"],
         sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN,
         time_filter: "day",
         limit: 3,
       )
-  end
-
-  def zeroed_accuracies
-    WeaponValidatable::ALL_WEAPONS.index_with { nil }.transform_keys { |weapon| "#{WeaponValidatable::SHORTENED_WEAPON_NAMES[weapon]}_accuracy" }
   end
 end

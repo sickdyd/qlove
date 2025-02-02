@@ -12,7 +12,8 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
     within_the_day = @current_time - 5.hours
     within_the_week = @current_time - 1.day
     within_the_month = @current_time - 2.weeks
-    all_time = @current_time - 3.months
+    within_the_year = @current_time - 3.months
+    all_time = @current_time - 3.years
 
     travel_to @current_time do
       3.times do
@@ -43,10 +44,19 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
         create(:stat, player: player3, created_at: within_the_month, kills: 40, deaths: 25)
         create(:stat, player: player4, created_at: within_the_month, kills: 50, deaths: 30)
 
-        # player1: 141 + 75 = 216 kills, 84 + 63 = 147 deaths, 216 / 147 = 1.47
-        # player2: 189 + 105 = 294 kills, 126 + 75 = 201 deaths, 294 / 201 = 1.46
-        # player3: 279 + 135 = 414 kills, 168 + 90 = 258 deaths, 414 / 258 = 1.6
-        # player4: 330 + 165 = 495 kills, 177 + 105 = 282 deaths, 495 / 282 = 1.75
+        # player1: 141 + 60 = 201 kills, 84 + 45 = 129 deaths, 201 / 129 = 1.55
+        # player2: 189 + 90 = 279 kills, 126 + 60 = 186 deaths, 279 / 186 = 1.5
+        # player3: 279 + 120 = 399 kills, 168 + 75 = 243 deaths, 399 / 243 = 1.64
+        # player4: 330 + 150 = 480 kills, 177 + 90 = 267 deaths, 480 / 267 = 1.8
+        create(:stat, player: player1, created_at: within_the_year, kills: 20, deaths: 15)
+        create(:stat, player: player2, created_at: within_the_year, kills: 30, deaths: 20)
+        create(:stat, player: player3, created_at: within_the_year, kills: 40, deaths: 25)
+        create(:stat, player: player4, created_at: within_the_year, kills: 50, deaths: 30)
+
+        # player1: 201 + 75 = 276 kills, 129 + 63 = 192 deaths, 276 / 192 = 1.44
+        # player2: 279 + 105 = 384 kills, 186 + 75 = 261 deaths, 384 / 261 = 1.47
+        # player3: 399 + 135 = 534 kills, 243 + 90 = 333 deaths, 534 / 333 = 1.6
+        # player4: 480 + 165 = 645 kills, 267 + 105 = 372 deaths, 645 / 372 = 1.73
         create(:stat, player: player1, created_at: all_time, kills: 25, deaths: 21)
         create(:stat, player: player2, created_at: all_time, kills: 35, deaths: 25)
         create(:stat, player: player3, created_at: all_time, kills: 45, deaths: 30)
@@ -204,7 +214,61 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
+  test "yearly kills" do
+    travel_to @current_time do
+      @service = KillsDeathsCalculatorService.new(**kills_deaths_calculator_service_default_params
+        .merge(time_filter: "year")
+      )
+      data = @service.leaderboard
 
+      assert_equal "Player Four", data.first.name
+      assert_equal 480, data.first.total_kills.to_i
+
+      assert_equal "Player Two", data.last.name
+      assert_equal 279, data.last.total_kills.to_i
+    end
+  end
+
+  test "yearly deaths" do
+    travel_to @current_time do
+      @service = KillsDeathsCalculatorService.new(**kills_deaths_calculator_service_default_params
+        .merge(
+          time_filter: "year",
+          sort_by: KillsDeathsCalculatorService::TOTAL_DEATHS_COLUMN
+        )
+      )
+      data = @service.leaderboard
+
+      assert_equal "Player Four", data.first.name
+      assert_equal 267, data.first.total_deaths.to_i
+
+      assert_equal "Player Two", data.last.name
+      assert_equal 186, data.last.total_deaths.to_i
+    end
+  end
+
+  test "yearly kdr" do
+    travel_to @current_time do
+      @service = KillsDeathsCalculatorService.new(**kills_deaths_calculator_service_default_params
+        .merge(
+          sort_by: KillsDeathsCalculatorService::KILL_DEATH_RATIO_COLUMN,
+          time_filter: "year"
+        )
+      )
+      data = @service.leaderboard
+
+      assert_equal "Player Four", data.first.name
+      assert_equal 1.8, data.first.kill_death_ratio.to_f
+
+      assert_equal "Player One", data.last.name
+      assert_equal 1.56, data.last.kill_death_ratio.to_f
+    end
+  end
+
+          # player1: 201 + 75 = 276 kills, 129 + 63 = 192 deaths, 276 / 192 = 1.44
+        # player2: 279 + 105 = 384 kills, 186 + 75 = 261 deaths, 384 / 261 = 1.47
+        # player3: 399 + 135 = 534 kills, 243 + 90 = 333 deaths, 534 / 333 = 1.6
+        # player4: 480 + 165 = 645 kills, 267 + 105 = 372 deaths, 645 / 372 = 1.73
 
   test "all time kills" do
     travel_to @current_time do
@@ -214,10 +278,10 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
       data = @service.leaderboard
 
       assert_equal "Player Four", data.first.name
-      assert_equal 495, data.first.total_kills.to_i
+      assert_equal 645, data.first.total_kills.to_i
 
       assert_equal "Player Two", data.last.name
-      assert_equal 294, data.last.total_kills.to_i
+      assert_equal 384, data.last.total_kills.to_i
     end
   end
 
@@ -232,10 +296,10 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
       data = @service.leaderboard
 
       assert_equal "Player Four", data.first.name
-      assert_equal 282, data.first.total_deaths.to_i
+      assert_equal 372, data.first.total_deaths.to_i
 
       assert_equal "Player Two", data.last.name
-      assert_equal 201, data.last.total_deaths.to_i
+      assert_equal 261, data.last.total_deaths.to_i
     end
   end
 
@@ -250,9 +314,9 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
       data = @service.leaderboard
 
       assert_equal "Player Four", data.first.name
-      assert_equal 1.76, data.first.kill_death_ratio.to_f
+      assert_equal 1.73, data.first.kill_death_ratio.to_f
 
-      assert_equal "Player One", data.last.name
+      assert_equal "Player Two", data.last.name
       assert_equal 1.47, data.last.kill_death_ratio.to_f
     end
   end
