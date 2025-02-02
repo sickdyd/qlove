@@ -80,6 +80,6 @@ class AccuracyCalculatorService < BaseCalculatorService
   end
 
   def headers
-    [ "name", "avg" ] + @weapons
+    [ "name", AVERAGE_ACCURACY_COLUMN ] + @weapons
   end
 end

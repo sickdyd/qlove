@@ -1,6 +1,6 @@
 class WinsLossesCalculatorService < BaseCalculatorService
-  TOTAL_WINS_COLUMN = "total_wins"
-  TOTAL_LOSSES_COLUMN = "total_losses"
+  TOTAL_WINS_COLUMN = "total_wins".freeze
+  TOTAL_LOSSES_COLUMN = "total_losses".freeze
 
   HEADERS = [ "name", TOTAL_WINS_COLUMN, TOTAL_LOSSES_COLUMN ]
 
@@ -11,8 +11,8 @@ class WinsLossesCalculatorService < BaseCalculatorService
           players.id,
           players.steam_id,
           players.name,
-          SUM(stats.win) as total_wins,
-          SUM(stats.lose) as total_losses
+          SUM(stats.win) as #{TOTAL_WINS_COLUMN},
+          SUM(stats.lose) as #{TOTAL_LOSSES_COLUMN}
         ")
     end
   end

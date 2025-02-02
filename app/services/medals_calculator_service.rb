@@ -1,5 +1,5 @@
 class MedalsCalculatorService < BaseCalculatorService
-  TOTAL_MEDALS_COLUMN = "total"
+  TOTAL_MEDALS_COLUMN = "total".freeze
 
   attr_reader :time_filter, :timezone, :limit, :formatted_table, :weapons, :medals, :steam_id, :sort_by
 
@@ -36,7 +36,7 @@ class MedalsCalculatorService < BaseCalculatorService
   private
 
   def headers
-    [ "name", "total" ] + medals
+    [ "name", TOTAL_MEDALS_COLUMN ] + medals
   end
 
   def medals_sql
@@ -49,7 +49,7 @@ class MedalsCalculatorService < BaseCalculatorService
     medals_filter = medals.map { |medal| "stats.#{medal} IS NOT NULL" }.join(" OR ")
     medals_sum = medals.map { |medal| "stats.#{medal}" }.join(" + ")
 
-    "SUM(#{medals_sum}) FILTER (WHERE #{medals_filter}) AS total"
+    "SUM(#{medals_sum}) FILTER (WHERE #{medals_filter}) AS #{TOTAL_MEDALS_COLUMN}"
   end
 
   def table_title
