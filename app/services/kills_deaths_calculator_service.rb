@@ -14,7 +14,7 @@ class KillsDeathsCalculatorService < BaseCalculatorService
           players.name,
           SUM(stats.kills) as #{TOTAL_KILLS_COLUMN},
           SUM(stats.deaths) as #{TOTAL_DEATHS_COLUMN},
-          ROUND(SUM(stats.kills) / NULLIF(SUM(stats.deaths), 0), 2) as #{KILL_DEATH_RATIO_COLUMN}
+          ROUND((SUM(stats.kills)::NUMERIC / NULLIF(SUM(stats.deaths), 0)), 2) as #{KILL_DEATH_RATIO_COLUMN}
         ")
     end
   end
