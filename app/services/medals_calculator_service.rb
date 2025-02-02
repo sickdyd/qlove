@@ -2,8 +2,6 @@ class MedalsCalculatorService < BaseCalculatorService
   TOTAL_MEDALS_COLUMN = "total_medals".freeze
 
   def leaderboard
-    start_time = TimeFilterable.start_time_for(time_filter: time_filter, timezone: timezone)
-
     data = Stat.joins(:player)
       .select("
         players.id,
