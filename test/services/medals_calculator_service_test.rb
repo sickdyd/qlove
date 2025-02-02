@@ -130,11 +130,6 @@ class MedalsCalculatorServiceTest < ActiveSupport::TestCase
     end
   end
 
-        # player1 630 + 40 * 3 + 30 * 3 = 840
-        # player2 720 + 30 * 3 + 20 * 3 = 870
-        # player3 330 + 20 * 3 + 10 * 3 = 420
-        # player4 426 + 10 * 3 + 5 * 3 = 467
-
   test "all time medals" do
     travel_to @current_time do
       @service = MedalsCalculatorService.new(**medals_calculator_service_default_params
