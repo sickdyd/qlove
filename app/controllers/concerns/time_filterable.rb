@@ -2,11 +2,11 @@ module TimeFilterable
   extend ActiveSupport::Concern
 
   VALID_TIMEZONES = ActiveSupport::TimeZone.all.map(&:name).freeze
-  DEFAULT_TIMEZONE = "Beijing".freeze
+  DEFAULT_TIMEZONE = "UTC".freeze
 
   TIME_FILTERS = %w[day week month year all_time].freeze
 
-  def self.start_time_for(time_filter:, timezone:)
+  def self.start_time_for(time_filter:, timezone: DEFAULT_TIMEZONE)
     unless TIME_FILTERS.include?(time_filter)
       raise ArgumentError, invalid_time_filter_error_message
     end
