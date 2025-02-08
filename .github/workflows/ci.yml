@@ -59,11 +59,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set Timezone
-        uses: szenius/set-timezone@v2.0
-        with:
-          timezoneLinux: "Asia/Beijing"
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
