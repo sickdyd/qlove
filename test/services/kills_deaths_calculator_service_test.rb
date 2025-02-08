@@ -63,6 +63,8 @@ class KillsDeathsCalculatorServiceTest < ActiveSupport::TestCase
         create(:stat, player: player4, created_at: all_time, kills: 55, deaths: 35)
       end
     end
+
+    AllTimeKillsDeathsStat.refresh
   end
 
   teardown do

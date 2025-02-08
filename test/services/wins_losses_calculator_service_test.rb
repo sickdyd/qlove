@@ -72,6 +72,8 @@ class WinsLossesCalculatorServiceTest < ActiveSupport::TestCase
         create(:stat, player: player4, created_at: all_time, win: 0, lose: 1)
       end
     end
+
+    AllTimeWinsLossesStat.refresh
   end
 
   teardown do

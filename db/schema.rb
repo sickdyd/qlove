@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_01_26_113527) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_08_110935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -87,4 +87,78 @@ ActiveRecord::Schema[8.0].define(version: 2025_01_26_113527) do
   end
 
   add_foreign_key "stats", "players"
+
+  create_view "all_time_damage_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id,
+      players.name,
+      players.steam_id,
+      sum(stats.damage_dealt) AS total_damage_dealt,
+      sum(stats.damage_taken) AS total_damage_taken
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id
+    ORDER BY (sum(stats.damage_dealt)) DESC;
+  SQL
+  add_index "all_time_damage_stats", ["id"], name: "index_all_time_damage_stats_on_id", unique: true
+  add_index "all_time_damage_stats", ["steam_id"], name: "index_all_time_damage_stats_on_steam_id", unique: true
+
+  create_view "all_time_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id,
+      players.name,
+      players.steam_id,
+      sum(stats.kills) AS total_kills,
+      sum(stats.deaths) AS total_deaths,
+          CASE
+              WHEN (sum(stats.deaths) = 0) THEN NULL::numeric
+              ELSE round(((sum(stats.kills))::numeric / (sum(stats.deaths))::numeric), 2)
+          END AS kill_death_ratio
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id
+    ORDER BY (sum(stats.kills)) DESC;
+  SQL
+  add_index "all_time_kills_deaths_stats", ["id"], name: "index_all_time_kills_deaths_stats_on_id", unique: true
+  add_index "all_time_kills_deaths_stats", ["steam_id"], name: "index_all_time_kills_deaths_stats_on_steam_id", unique: true
+
+  create_view "all_time_wins_losses_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id,
+      players.name,
+      players.steam_id,
+      sum(stats.win) AS total_wins,
+      sum(stats.lose) AS total_losses
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id
+    ORDER BY (sum(stats.win)) DESC;
+  SQL
+  add_index "all_time_wins_losses_stats", ["id"], name: "index_all_time_wins_losses_stats_on_id", unique: true
+  add_index "all_time_wins_losses_stats", ["steam_id"], name: "index_all_time_wins_losses_stats_on_steam_id", unique: true
+
+  create_view "all_time_medals_stats", materialized: true, sql_definition: <<-SQL
+      SELECT players.id,
+      players.name,
+      players.steam_id,
+      sum(stats.accuracy) AS accuracy,
+      sum(stats.assists) AS assists,
+      sum(stats.captures) AS captures,
+      sum(stats.combokill) AS combokill,
+      sum(stats.defends) AS defends,
+      sum(stats.excellent) AS excellent,
+      sum(stats.firstfrag) AS firstfrag,
+      sum(stats.headshot) AS headshot,
+      sum(stats.humiliation) AS humiliation,
+      sum(stats.impressive) AS impressive,
+      sum(stats.midair) AS midair,
+      sum(stats.perfect) AS perfect,
+      sum(stats.perforated) AS perforated,
+      sum(stats.quadgod) AS quadgod,
+      sum(stats.rampage) AS rampage,
+      sum(stats.revenge) AS revenge
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id;
+  SQL
+  add_index "all_time_medals_stats", ["id"], name: "index_all_time_medals_stats_on_id", unique: true
+  add_index "all_time_medals_stats", ["steam_id"], name: "index_all_time_medals_stats_on_steam_id", unique: true
+
 end

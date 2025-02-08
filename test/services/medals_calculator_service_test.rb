@@ -63,6 +63,8 @@ class MedalsCalculatorServiceTest < ActiveSupport::TestCase
         create(:stat, player: player4, created_at: all_time, accuracy: 10, excellent: 5)
       end
     end
+
+    AllTimeMedalsStat.refresh
   end
 
   teardown do

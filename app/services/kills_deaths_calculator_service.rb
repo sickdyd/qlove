@@ -18,4 +18,8 @@ class KillsDeathsCalculatorService < BaseCalculatorService
         ")
     end
   end
+
+  def all_time
+    AllTimeKillsDeathsStat.all.limit(limit).order("#{sort_by} DESC NULLS LAST")
+  end
 end

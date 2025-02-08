@@ -63,6 +63,8 @@ class DamageCalculatorServiceTest < ActiveSupport::TestCase
         create(:stat, player: player4, created_at: all_time, damage_dealt: 5500, damage_taken: 2500)
       end
     end
+
+    AllTimeDamageStat.refresh
   end
 
   teardown do
