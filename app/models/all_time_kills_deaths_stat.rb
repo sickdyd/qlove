@@ -1,5 +1,5 @@
 class AllTimeKillsDeathsStat < BaseMaterializedView
-  self.primary_key = :total_kills
+  self.primary_key = :id
 
   TOTAL_KILLS_COLUMN = "total_kills".freeze
   TOTAL_DEATHS_COLUMN = "total_deaths".freeze
