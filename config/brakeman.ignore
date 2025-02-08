@@ -1,0 +1,97 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "788bc25797162961fbc6ff0d164ca52cc9fb00ffef3755bfae8c4af6e7d926a3",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/accuracy_calculator_service.rb",
+      "line": 39,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Stat.with(:accuracy_per_weapon => Stat.with(:weapon_accuracies_sums => Stat.joins(:player).where(\"stats.created_at >= ?\", start_time).select(\"\\n        players.id,\\n        players.name,\\n        players.steam_id,\\n        #{weapon_accuracies_sql}\\n      \").group(\"\\n        players.id,\\n        players.steam_id,\\n        players.name\\n      \")).from(\"weapon_accuracies_sums\").select(\"\\n        weapon_accuracies_sums.id,\\n        weapon_accuracies_sums.name,\\n        weapon_accuracies_sums.steam_id,\\n        #{accuracy_per_weapon_sql}\\n      \")).from(\"accuracy_per_weapon\").select(\"\\n        accuracy_per_weapon.id,\\n        accuracy_per_weapon.name,\\n        accuracy_per_weapon.steam_id,\\n        ROUND(\\n          (#{weapons_average_nominator_sql}) /\\n          NULLIF(\\n            #{weapons_average_denominator_sql}, 0\\n          ), 0\\n        )::INTEGER AS #{\"avg\"},\\n        #{select_weapons_sql}\\n      \")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "AccuracyCalculatorService",
+        "method": "leaderboard"
+      },
+      "user_input": "weapons_average_nominator_sql",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": "@weapons is sanitized at controller level therefore it's guaranteed to contain only valid entries."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "7dd1424d4157700918d9e3b20fc1f1920747b07abc45f4728712fd1ebb3983c3",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/accuracy_calculator_service.rb",
+      "line": 28,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Stat.with(:weapon_accuracies_sums => Stat.joins(:player).where(\"stats.created_at >= ?\", start_time).select(\"\\n        players.id,\\n        players.name,\\n        players.steam_id,\\n        #{weapon_accuracies_sql}\\n      \").group(\"\\n        players.id,\\n        players.steam_id,\\n        players.name\\n      \")).from(\"weapon_accuracies_sums\").select(\"\\n        weapon_accuracies_sums.id,\\n        weapon_accuracies_sums.name,\\n        weapon_accuracies_sums.steam_id,\\n        #{accuracy_per_weapon_sql}\\n      \")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "AccuracyCalculatorService",
+        "method": "leaderboard"
+      },
+      "user_input": "accuracy_per_weapon_sql",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": "@weapons is sanitized at controller level therefore it's guaranteed to contain only valid entries."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "86ecd4306e6ce614a2a0606826dd1d3d41eb271f6a02644d9c8a54475dd8d00f",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/accuracy_calculator_service.rb",
+      "line": 13,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Stat.joins(:player).where(\"stats.created_at >= ?\", start_time).select(\"\\n        players.id,\\n        players.name,\\n        players.steam_id,\\n        #{weapon_accuracies_sql}\\n      \")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "AccuracyCalculatorService",
+        "method": "leaderboard"
+      },
+      "user_input": "weapon_accuracies_sql",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": "@weapons is sanitized at controller level therefore it's guaranteed to contain only valid entries."
+    },
+    {
+      "warning_type": "SQL Injection",
+      "warning_code": 0,
+      "fingerprint": "9b91183d7a0ca5f0be45370c89d5f774b098132b093e65ea860db63a9801ec54",
+      "check_name": "SQL",
+      "message": "Possible SQL injection",
+      "file": "app/services/medals_calculator_service.rb",
+      "line": 10,
+      "link": "https://brakemanscanner.org/docs/warning_types/sql_injection/",
+      "code": "Stat.joins(:player).select(\"\\n        players.id,\\n        players.steam_id,\\n        players.name,\\n        #{medals_sql},\\n        #{total_medals_sql}\\n      \")",
+      "render_path": null,
+      "location": {
+        "type": "method",
+        "class": "MedalsCalculatorService",
+        "method": "leaderboard"
+      },
+      "user_input": "medals_sql",
+      "confidence": "Medium",
+      "cwe_id": [
+        89
+      ],
+      "note": "@medals is sanitized at controller level therefore it's guaranteed to contain only valid entries."
+    }
+  ],
+  "brakeman_version": "7.0.0"
+}
