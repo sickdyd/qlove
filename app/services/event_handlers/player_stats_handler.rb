@@ -68,7 +68,7 @@ module EventHandlers
       total_accuracies = []
 
       data.each do |name, stats|
-        weapon_key = SHORTENED_WEAPON_NAMES[name.downcase].downcase
+        weapon_key = WeaponValidatable::SHORTENED_WEAPON_NAMES[name.downcase].downcase
         weapon_accuracy = accuracy(shots: stats["S"].to_i, hits: stats["H"].to_i)
         total_accuracies << weapon_accuracy unless weapon_accuracy == nil
 
