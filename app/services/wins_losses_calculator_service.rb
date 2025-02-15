@@ -18,6 +18,7 @@ class WinsLossesCalculatorService < BaseCalculatorService
   end
 
   def all_time
-    AllTimeWinsLossesStat.all.limit(limit).order("#{sort_by} DESC NULLS LAST")
+    data = AllTimeWinsLossesStat.all.limit(limit).order("#{sort_by} DESC NULLS LAST")
+    handle_query_results(data)
   end
 end

@@ -18,6 +18,7 @@ class DamageCalculatorService < BaseCalculatorService
   end
 
   def all_time
-    AllTimeDamageStat.all.limit(limit).order("#{sort_by} DESC NULLS LAST")
+    data = AllTimeDamageStat.all.limit(limit).order("#{sort_by} DESC NULLS LAST")
+    handle_query_results(data)
   end
 end

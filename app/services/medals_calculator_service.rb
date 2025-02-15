@@ -23,7 +23,7 @@ class MedalsCalculatorService < BaseCalculatorService
   def all_time
     total_medals_expr = medals.map { |medal| "COALESCE(#{medal}, 0)" }.join(" + ")
 
-    AllTimeMedalsStat
+    data = AllTimeMedalsStat
       .select("
         id,
         name,
@@ -34,6 +34,8 @@ class MedalsCalculatorService < BaseCalculatorService
       .group("id, steam_id, name")
       .order("#{sort_by} DESC")
       .limit(limit)
+
+    handle_query_results(data)
   end
 
   private
