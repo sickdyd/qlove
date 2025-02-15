@@ -55,7 +55,7 @@ class AccuracyCalculatorService < BaseCalculatorService
 
   def weapon_accuracies_sql
     @weapons.map do |weapon|
-      "SUM(#{weapon}_accuracy) as #{weapon}_total_accuracy, COUNT(*) FILTER (WHERE #{weapon}_accuracy > 0) AS #{weapon}_total_entries"
+      "SUM(#{weapon}_accuracy) as #{weapon}_total_accuracy, COUNT(*) FILTER (WHERE #{weapon}_accuracy >= 0) AS #{weapon}_total_entries"
     end.join(", ")
   end
 
@@ -71,7 +71,7 @@ class AccuracyCalculatorService < BaseCalculatorService
 
   def weapons_average_denominator_sql
     @weapons.map do |weapon|
-      "CASE WHEN #{weapon} IS NOT NULL AND #{weapon} > 0 THEN 1 ELSE 0 END"
+      "CASE WHEN #{weapon} IS NOT NULL AND #{weapon} >= 0 THEN 1 ELSE 0 END"
     end.join(" + ")
   end
 
