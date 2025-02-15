@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_08_110935) do
+ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -84,6 +84,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_08_110935) do
     t.datetime "updated_at", null: false
     t.index ["created_at"], name: "index_stats_on_created_at"
     t.index ["player_id"], name: "index_stats_on_player_id"
+  end
+
+  create_table "zmq_subscribers", force: :cascade do |t|
+    t.string "host", null: false
+    t.decimal "port", null: false
+    t.string "username", null: false
+    t.string "password", null: false
+    t.boolean "started", default: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   add_foreign_key "stats", "players"
