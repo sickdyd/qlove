@@ -5,7 +5,7 @@ class Api::V1::BaseController < ApplicationController
   before_action :validate_formatted_table
 
   DEFAULT_RESULTS_LIMIT = 10
-  MAX_RESULTS_LIMIT = 30
+  MAX_RESULTS_LIMIT = 100
   MIN_RESULTS_LIMIT = 1
   EARLIEST_YEAR = 2010
 
