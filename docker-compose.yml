@@ -1,0 +1,26 @@
+services:
+  qlove_postgres:
+    env_file: ".env"
+    image: postgres
+    restart: always
+    shm_size: 256mb
+    ports:
+      - 5432:5432
+    volumes:
+      - $POSTGRES_DATA:/var/lib/postgresql/data
+
+  qlove_adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  qlove_api:
+    links:
+      - qlove_postgres
+    env_file: ".env"
+    build: .
+    ports:
+      - 3000:3000
+    depends_on:
+      - qlove_postgres

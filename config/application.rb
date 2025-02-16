@@ -39,7 +39,7 @@ module Qlove
 
     config.after_initialize do
       if defined?(Rails::Server)
-        # ZmqSubscriberService.run
+        ZmqSubscriberService.run
       end
     end
   end
