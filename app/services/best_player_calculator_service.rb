@@ -1,9 +1,11 @@
 class BestPlayerCalculatorService < BaseCalculatorService
   HEADERS = %w[ name average_accuracy total_damage_dealt total_kills strength]
+  # The sort by value is generated programmatically
+  SORT_BY_COLUMN = "strength".freeze
 
   def leaderboard
     # We need to extract data for every player for all times in order to finally sort them by strength
-    default_params = Api::V1::BaseController::COMMON_PARAMS_DEFAULTS.merge(limit: Player.count, time_filter: "all_time")
+    default_params = Api::V1::BaseController::COMMON_PARAMS_DEFAULTS.merge(limit: Player.count, time_filter: "all_time", sort_by: sort_by)
 
     all_time_accuracies = AccuracyCalculatorService.new(**default_params).leaderboard
     all_time_damage_dealt = DamageCalculatorService.new(**default_params.merge(sort_by: DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN)).leaderboard
@@ -29,11 +31,12 @@ class BestPlayerCalculatorService < BaseCalculatorService
         total_kills: kills,
         strength: calculate_strength(avg_acc, dmg, kills, max_accuracy, max_damage, max_kills)
       }
-    end.sort_by { |player| -player[:strength] }.first(default_params[:limit])
+    end.sort_by { |player| -player[SORT_BY_COLUMN.to_sym] }.first(limit.to_i)
   end
 
   private
 
+  # Returns a normalized value between 0 and 100 representing the strenght of a player
   def calculate_strength(accuracy, damage_dealt, kills, max_accuracy, max_damage, max_kills)
     normalized_accuracy = accuracy.to_f / max_accuracy
     normalized_damage_dealt = damage_dealt.to_f / max_damage
