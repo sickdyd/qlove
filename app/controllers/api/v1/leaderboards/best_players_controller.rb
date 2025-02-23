@@ -1,7 +1,7 @@
 class Api::V1::Leaderboards::BestPlayersController < Api::V1::BaseController
   def show
-    params_with_sort_by = best_players_params.to_h.symbolize_keys.merge(sort_by: BestPlayerCalculatorService::SORT_BY_COLUMN)
-    data = BestPlayerCalculatorService.new(**params_with_sort_by).leaderboard
+    params_with_sort_by = best_players_params.to_h.symbolize_keys.merge(sort_by: BestPlayersCalculatorService::SORT_BY_COLUMN)
+    data = BestPlayersCalculatorService.new(**params_with_sort_by).leaderboard
     render json: { data: data }
   end
 
