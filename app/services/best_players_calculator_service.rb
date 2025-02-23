@@ -1,4 +1,4 @@
-class BestPlayerCalculatorService < BaseCalculatorService
+class BestPlayersCalculatorService < BaseCalculatorService
   HEADERS = %w[ name average_accuracy total_damage_dealt total_kills strength]
   # The sort by value is generated programmatically
   SORT_BY_COLUMN = "strength".freeze
