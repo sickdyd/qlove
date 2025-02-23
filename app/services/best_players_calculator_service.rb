@@ -5,7 +5,7 @@ class BestPlayersCalculatorService < BaseCalculatorService
 
   def leaderboard
     # We need to extract data for every player for all times in order to finally sort them by strength
-    default_params = Api::V1::BaseController::COMMON_PARAMS_DEFAULTS.merge(limit: Player.count, time_filter: "all_time", sort_by: sort_by)
+    default_params = Api::V1::BaseController::COMMON_PARAMS_DEFAULTS.merge(limit: Player.count, time_filter: time_filter, sort_by: sort_by)
 
     all_time_accuracies = AccuracyCalculatorService.new(**default_params).leaderboard
     all_time_damage_dealt = DamageCalculatorService.new(**default_params.merge(sort_by: DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN)).leaderboard
