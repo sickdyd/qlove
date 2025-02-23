@@ -32,6 +32,8 @@ class BestPlayersCalculatorService < BaseCalculatorService
         strength: calculate_strength(avg_acc, dmg, kills, max_accuracy, max_damage, max_kills)
       }
     end.sort_by { |player| -player[SORT_BY_COLUMN.to_sym] }.first(limit.to_i)
+
+    handle_query_results(data)
   end
 
   private
