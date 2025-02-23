@@ -6,7 +6,7 @@ class AccuracyCalculatorService < BaseCalculatorService
       .joins(:player)
       .where("stats.created_at >= ?", start_time)
       .select("
-        players.id,
+        players.id as player_id,
         players.name,
         players.steam_id,
         #{weapon_accuracies_sql}
@@ -21,7 +21,7 @@ class AccuracyCalculatorService < BaseCalculatorService
       .with(weapon_accuracies_sums: weapon_accuracies_sums)
       .from("weapon_accuracies_sums")
       .select("
-        weapon_accuracies_sums.id,
+        weapon_accuracies_sums.player_id,
         weapon_accuracies_sums.name,
         weapon_accuracies_sums.steam_id,
         #{accuracy_per_weapon_sql}
@@ -31,7 +31,7 @@ class AccuracyCalculatorService < BaseCalculatorService
       .with(accuracy_per_weapon: accuracy_per_weapon)
       .from("accuracy_per_weapon")
       .select("
-        accuracy_per_weapon.id,
+        accuracy_per_weapon.player_id,
         accuracy_per_weapon.name,
         accuracy_per_weapon.steam_id,
         ROUND(

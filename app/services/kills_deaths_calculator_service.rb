@@ -9,7 +9,7 @@ class KillsDeathsCalculatorService < BaseCalculatorService
     super do |query|
       query
         .select("
-          players.id,
+          players.id as player_id,
           players.steam_id,
           players.name,
           SUM(stats.kills) as #{TOTAL_KILLS_COLUMN},

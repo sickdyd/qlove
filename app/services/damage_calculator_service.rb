@@ -8,7 +8,7 @@ class DamageCalculatorService < BaseCalculatorService
     super do |query|
       query
         .select("
-          players.id,
+          players.id as player_id,
           players.steam_id,
           players.name,
           SUM(stats.damage_dealt) as #{TOTAL_DAMAGE_DEALT_COLUMN},

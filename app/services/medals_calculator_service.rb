@@ -6,7 +6,7 @@ class MedalsCalculatorService < BaseCalculatorService
 
     data = Stat.joins(:player)
       .select("
-        players.id,
+        players.id as player_id,
         players.steam_id,
         players.name,
         #{medals_sql},

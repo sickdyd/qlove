@@ -8,7 +8,7 @@ class WinsLossesCalculatorService < BaseCalculatorService
     super do |query|
       query
         .select("
-          players.id,
+          players.id as player_id,
           players.steam_id,
           players.name,
           SUM(stats.win) as #{TOTAL_WINS_COLUMN},
