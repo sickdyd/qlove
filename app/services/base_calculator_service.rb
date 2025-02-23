@@ -26,6 +26,7 @@ class BaseCalculatorService
 
   def leaderboard
     # For all time results, use a dedicated materialized view to improve performance
+    # The method all_time is implemented in the subclass
     return all_time if time_filter == "all_time"
 
     query = Stat.joins(:player)
