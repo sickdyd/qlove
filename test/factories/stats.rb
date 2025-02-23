@@ -77,7 +77,7 @@ FactoryBot.define do
 
     game_average_accuracy { Faker::Number.between(from: 0, to: 100) }
 
-    created_at { Faker::Time.between(from: 1.year.ago, to: Time.zone.now, period: :all) }
+    created_at { Faker::Time.between(from: 1.year.ago, to: Time.zone.now) }
     updated_at { created_at }
   end
 end
