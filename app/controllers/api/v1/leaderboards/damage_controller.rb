@@ -21,8 +21,9 @@ class Api::V1::Leaderboards::DamageController < Api::V1::BaseController
   end
 
   def render_leaderboard(sort_by:)
-    params = damage_params.to_h.symbolize_keys.merge(sort_by: sort_by)
-    data = DamageCalculatorService.new(**params).leaderboard
+    merged_params = damage_params.to_h.symbolize_keys.merge(sort_by: sort_by)
+
+    data = DamageCalculatorService.new(**merged_params).leaderboard
     render json: { data: data }
   end
 end

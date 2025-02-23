@@ -46,11 +46,12 @@ class Api::V1::Leaderboards::AccuracyController < Api::V1::BaseController
   end
 
   def render_leaderboard
-    params = accuracy_params.to_h.symbolize_keys
-    data = AccuracyCalculatorService.new(**params.merge(
+    merged_params = accuracy_params.to_h.symbolize_keys.merge(
       weapons: weapons_array,
       sort_by: AccuracyCalculatorService::AVERAGE_ACCURACY_COLUMN
-    )).leaderboard
+    )
+
+    data = AccuracyCalculatorService.new(**merged_params).leaderboard
     render json: { data: data }
   end
 end

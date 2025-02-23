@@ -25,8 +25,9 @@ class Api::V1::Leaderboards::KillsDeathsController < Api::V1::BaseController
   end
 
   def render_leaderboard(sort_by:)
-    params = kills_deaths_params.to_h.symbolize_keys.merge(sort_by: sort_by)
-    data = KillsDeathsCalculatorService.new(**params).leaderboard
+    merged_params = kills_deaths_params.to_h.symbolize_keys.merge(sort_by: sort_by)
+
+    data = KillsDeathsCalculatorService.new(**merged_params).leaderboard
     render json: { data: data }
   end
 end

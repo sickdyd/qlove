@@ -7,6 +7,12 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
 
   private
 
+  def medals_array
+    return MedalValidatable::ALL_MEDALS if params[:medals].blank?
+
+    params[:medals].split(",").map(&:strip)
+  end
+
   def medals_params
     params
       .permit(
@@ -23,9 +29,12 @@ class Api::V1::Leaderboards::MedalsController < Api::V1::BaseController
   end
 
   def render_leaderboard(sort_by:)
-    medals = medals_params[:medals].split(",")
-    params = medals_params.to_h.symbolize_keys.merge(sort_by: sort_by, medals: medals)
-    data = MedalsCalculatorService.new(**params).leaderboard
+    merged_params = medals_params.to_h.symbolize_keys.merge(
+        medals: medals_array,
+        sort_by: sort_by
+      )
+
+    data = MedalsCalculatorService.new(**merged_params).leaderboard
     render json: { data: data }
   end
 end

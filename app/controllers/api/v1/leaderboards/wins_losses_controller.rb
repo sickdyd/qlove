@@ -21,8 +21,9 @@ class Api::V1::Leaderboards::WinsLossesController < Api::V1::BaseController
   end
 
   def render_leaderboard(sort_by:)
-    params = wins_losses_params.to_h.symbolize_keys.merge(sort_by: sort_by)
-    data = WinsLossesCalculatorService.new(**params).leaderboard
+    merged_params = wins_losses_params.to_h.symbolize_keys.merge(sort_by: sort_by)
+
+    data = WinsLossesCalculatorService.new(**merged_params).leaderboard
     render json: { data: data }
   end
 end
