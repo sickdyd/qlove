@@ -11,7 +11,6 @@ class BaseCalculatorService
     steam_id: nil,
     sort_by:
   )
-
     @time_filter = time_filter
     @timezone = timezone
     @limit = limit
