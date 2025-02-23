@@ -9,9 +9,10 @@ Rails.application.routes.draw do
     namespace :v1 do
       namespace :leaderboards do
         get :accuracy, to: "accuracy#index"
-        get :best_players, to: "best_players#show"
+        get :best, to: "best_players#show"
         get :medals, to: "medals#index"
         get :damage_dealt, to: "damage#damage_dealt"
+        get :damage, to: "damage#damage_dealt"
         get :damage_taken, to: "damage#damage_taken"
         get :kills, to: "kills_deaths#kills"
         get :deaths, to: "kills_deaths#deaths"
