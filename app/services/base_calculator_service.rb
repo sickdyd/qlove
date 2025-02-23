@@ -1,7 +1,17 @@
 class BaseCalculatorService
   attr_reader :time_filter, :timezone, :limit, :formatted_table, :weapons, :medals, :steam_id, :sort_by
 
-  def initialize(time_filter: "year", timezone: "UTC", limit: 10, formatted_table: false, weapons: WeaponValidatable::ALL_WEAPONS, medals: MedalValidatable::ALL_MEDALS, steam_id: nil, sort_by:)
+  def initialize(
+    time_filter: TimeFilterable::DEFAULT_TIME_FILTER,
+    timezone: TimeFilterable::DEFAULT_TIMEZONE,
+    limit: BaseController::DEFAULT_RESULTS_LIMIT,
+    formatted_table: BaseController::DEFAULT_FORMATTED_TABLE,
+    weapons: WeaponValidatable::ALL_WEAPONS,
+    medals: MedalValidatable::ALL_MEDALS,
+    steam_id: nil,
+    sort_by:
+  )
+
     @time_filter = time_filter
     @timezone = timezone
     @limit = limit

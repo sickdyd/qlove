@@ -5,6 +5,7 @@ module TimeFilterable
   DEFAULT_TIMEZONE = "UTC".freeze
 
   TIME_FILTERS = %w[day week month year all_time].freeze
+  DEFAULT_TIME_FILTER = "day".freeze
 
   def self.start_time_for(time_filter:, timezone: DEFAULT_TIMEZONE)
     unless TIME_FILTERS.include?(time_filter)

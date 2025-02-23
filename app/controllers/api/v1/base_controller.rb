@@ -5,15 +5,16 @@ class Api::V1::BaseController < ApplicationController
   before_action :validate_formatted_table
 
   DEFAULT_RESULTS_LIMIT = 10
+  DEFAULT_FORMATTED_TABLE = false
   MAX_RESULTS_LIMIT = 100
   MIN_RESULTS_LIMIT = 1
   EARLIEST_YEAR = 2010
 
   COMMON_PARAMS_DEFAULTS = {
-    time_filter: "all_time",
+    time_filter: TimeFilterable::DEFAULT_TIME_FILTER,
     timezone: TimeFilterable::DEFAULT_TIMEZONE,
     limit: DEFAULT_RESULTS_LIMIT,
-    formatted_table: false
+    formatted_table: DEFAULT_FORMATTED_TABLE
   }
 
   private
