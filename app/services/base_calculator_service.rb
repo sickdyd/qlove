@@ -4,8 +4,8 @@ class BaseCalculatorService
   def initialize(
     time_filter: TimeFilterable::DEFAULT_TIME_FILTER,
     timezone: TimeFilterable::DEFAULT_TIMEZONE,
-    limit: BaseController::DEFAULT_RESULTS_LIMIT,
-    formatted_table: BaseController::DEFAULT_FORMATTED_TABLE,
+    limit: Api::V1::BaseController::DEFAULT_RESULTS_LIMIT,
+    formatted_table: Api::V1::BaseController::DEFAULT_FORMATTED_TABLE,
     weapons: WeaponValidatable::ALL_WEAPONS,
     medals: MedalValidatable::ALL_MEDALS,
     steam_id: nil,
