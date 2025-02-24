@@ -25,13 +25,13 @@ class MedalsCalculatorService < BaseCalculatorService
 
     data = AllTimeMedalsStat
       .select("
-        id,
+        player_id,
         name,
         steam_id,
         #{medals_sql(prefix: "")},
         #{total_medals_sql(prefix: "")}
       ")
-      .group("id, steam_id, name")
+      .group("player_id, steam_id, name")
       .order("#{sort_by} DESC")
       .limit(limit)
 

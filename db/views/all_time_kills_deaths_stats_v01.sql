@@ -1,5 +1,5 @@
 SELECT
-  players.id AS id,
+  players.id AS player_id,
   players.name AS name,
   players.steam_id AS steam_id,
   SUM(stats.kills) AS total_kills,
