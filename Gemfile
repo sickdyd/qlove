@@ -34,9 +34,9 @@ gem "bootsnap", require: false
 
 gem "strong_migrations"
 
-gem 'rack-attack'
+gem "rack-attack"
 
-gem 'rollbar'
+gem "rollbar"
 
 group :development, :test do
   gem "faker"
