@@ -5,7 +5,6 @@ class BestPlayersCalculatorServiceTest < ActiveSupport::TestCase
     player1 = create(:player, steam_id: "STEAM_1", name: "Player One")
     player2 = create(:player, steam_id: "STEAM_2", name: "Player Two")
     player3 = create(:player, steam_id: "STEAM_3", name: "Player Three")
-    player4 = create(:player, steam_id: "STEAM_4", name: "Player Four")
 
     @current_time = Time.new(2024, 12, 31).end_of_day
 
@@ -16,7 +15,9 @@ class BestPlayersCalculatorServiceTest < ActiveSupport::TestCase
     all_time = @current_time - 3.years
 
     travel_to @current_time do
-      player_stat = zeroed_stats.merge(damage_dealt: 10000, lg_accuracy: 100, kills: 10)
+      # Daily stats
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 100, damage_dealt: 10000, kills: 10)
       create(:stat, player: player1, created_at: within_the_day, **player_stat)
 
       player_stat = zeroed_stats.merge(lg_accuracy: 50, damage_dealt: 5000, kills: 5)
@@ -24,6 +25,50 @@ class BestPlayersCalculatorServiceTest < ActiveSupport::TestCase
 
       player_stat = zeroed_stats.merge(lg_accuracy: 0, damage_dealt: 0, kills: 0)
       create(:stat, player: player3, created_at: within_the_day, **player_stat)
+
+      # Weekly stats
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 0, damage_dealt: 0, kills: 0)
+      create(:stat, player: player1, created_at: within_the_week, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 50, damage_dealt: 5000, kills: 6)
+      create(:stat, player: player2, created_at: within_the_week, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 100, damage_dealt: 10000, kills: 12)
+      create(:stat, player: player3, created_at: within_the_week, **player_stat)
+
+      # Monthly stats
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 80, damage_dealt: 5000, kills: 16)
+      create(:stat, player: player1, created_at: within_the_month, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 70, damage_dealt: 3000, kills: 12)
+      create(:stat, player: player2, created_at: within_the_month, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 50, damage_dealt: 7000, kills: 10)
+      create(:stat, player: player3, created_at: within_the_month, **player_stat)
+
+      # Yearly stats
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 80, damage_dealt: 5000, kills: 16)
+      create(:stat, player: player1, created_at: within_the_year, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 70, damage_dealt: 300000, kills: 12)
+      create(:stat, player: player2, created_at: within_the_year, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 50, damage_dealt: 4000, kills: 10)
+      create(:stat, player: player3, created_at: within_the_year, **player_stat)
+
+      # All time stats
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 80, damage_dealt: 50000, kills: 62)
+      create(:stat, player: player1, created_at: all_time, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 70, damage_dealt: 3000, kills: 40)
+      create(:stat, player: player2, created_at: all_time, **player_stat)
+
+      player_stat = zeroed_stats.merge(lg_accuracy: 50, damage_dealt: 400000, kills: 100)
+      create(:stat, player: player3, created_at: all_time, **player_stat)
     end
 
     AllTimeDamageStat.refresh
@@ -47,6 +92,75 @@ class BestPlayersCalculatorServiceTest < ActiveSupport::TestCase
 
       assert_equal "Player Three", data.last.name
       assert_equal 0, data.last.strength
+    end
+  end
+
+  test "weekly best players" do
+    travel_to @current_time do
+      @service = BestPlayersCalculatorService.new(**best_players_calculator_service_default_params.merge(time_filter: "week"))
+      data = @service.leaderboard
+
+      assert_equal "Player Three", data.first.name
+      assert_equal 100, data.first.strength
+
+      assert_equal "Player Two", data.second.name
+      assert_equal 97, data.second.strength
+
+      assert_equal "Player One", data.last.name
+      assert_equal 94, data.last.strength
+    end
+  end
+
+  test "monthly best players" do
+    travel_to @current_time do
+      @service = BestPlayersCalculatorService.new(**best_players_calculator_service_default_params.merge(time_filter: "month"))
+      data = @service.leaderboard
+
+      # Note: not necessarily the first player has 100 score. To have 100 score, the player must have most damage, most kills and most accuracy.
+      # The first player could potentially not have the top values in all 3 categories, but still have the highest score if for example they have
+      # an extraordinary amount of damage, but not the highest accuracy or kills.
+
+      assert_equal "Player One", data.first.name
+      assert_equal 96, data.first.strength
+
+      assert_equal "Player Three", data.second.name
+      assert_equal 89, data.second.strength
+
+      assert_equal "Player Two", data.last.name
+      assert_equal 86, data.last.strength
+    end
+  end
+
+  test "yearly best players" do
+    travel_to @current_time do
+      @service = BestPlayersCalculatorService.new(**best_players_calculator_service_default_params.merge(time_filter: "year"))
+      data = @service.leaderboard
+
+      # These player have an extraordinary amount of damage, but not the highest accuracy or kills, however it ends up with the highest score.
+      assert_equal "Player Two", data.first.name
+      assert_equal 92, data.first.strength
+
+      assert_equal "Player One", data.second.name
+      assert_equal 69, data.second.strength
+
+      assert_equal "Player Three", data.last.name
+      assert_equal 53, data.last.strength
+    end
+  end
+
+  test "all time best players" do
+    travel_to @current_time do
+      @service = BestPlayersCalculatorService.new(**best_players_calculator_service_default_params.merge(time_filter: "all_time"))
+      data = @service.leaderboard
+
+      assert_equal "Player Three", data.first.name
+      assert_equal 91, data.first.strength
+
+      assert_equal "Player Two", data.second.name
+      assert_equal 74, data.second.strength
+
+      assert_equal "Player One", data.last.name
+      assert_equal 65, data.last.strength
     end
   end
 

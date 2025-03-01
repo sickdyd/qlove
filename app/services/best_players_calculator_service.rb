@@ -9,21 +9,21 @@ class BestPlayersCalculatorService < BaseCalculatorService
     damage_params = default_params.merge(sort_by: DamageCalculatorService::TOTAL_DAMAGE_DEALT_COLUMN)
     kills_deaths_params = default_params.merge(sort_by: KillsDeathsCalculatorService::TOTAL_KILLS_COLUMN)
 
-    all_time_accuracies = AccuracyCalculatorService.new(**accuracies_params).leaderboard
-    all_time_damage_dealt = DamageCalculatorService.new(**damage_params).leaderboard
-    all_time_kills_deaths = KillsDeathsCalculatorService.new(**kills_deaths_params).leaderboard
+    all_accuracies = AccuracyCalculatorService.new(**accuracies_params).leaderboard
+    all_damage_dealt = DamageCalculatorService.new(**damage_params).leaderboard
+    all_kills_deaths = KillsDeathsCalculatorService.new(**kills_deaths_params).leaderboard
 
-    return [] unless all_time_accuracies.present? && all_time_damage_dealt.present? && all_time_kills_deaths.present?
+    return [] unless all_accuracies.present? && all_damage_dealt.present? && all_kills_deaths.present?
 
-    max_accuracy = all_time_accuracies.first.avg
-    max_damage = all_time_damage_dealt.first.total_damage_dealt
-    max_kills = all_time_kills_deaths.first.total_kills
+    max_accuracy = all_accuracies.first.avg
+    max_damage = all_damage_dealt.first.total_damage_dealt
+    max_kills = all_kills_deaths.first.total_kills
 
     unsorted_data = Player.all.map do |player|
       # TODO: fix "find_by(player: player)" failing miserably
-      accuracy = all_time_accuracies.find { |acc| acc.player.id == player.id }
-      damage = all_time_damage_dealt.find { |dmg| dmg.player.id == player.id }
-      kills_deaths = all_time_kills_deaths.find { |kd| kd.player.id == player.id }
+      accuracy = all_accuracies.find { |acc| acc.player.id == player.id }
+      damage = all_damage_dealt.find { |dmg| dmg.player.id == player.id }
+      kills_deaths = all_kills_deaths.find { |kd| kd.player.id == player.id }
 
       next nil unless accuracy.present? && damage.present? && kills_deaths.present?
 
