@@ -34,6 +34,8 @@ gem "bootsnap", require: false
 
 gem "strong_migrations"
 
+gem 'rack-attack'
+
 group :development, :test do
   gem "faker"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
