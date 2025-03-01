@@ -20,3 +20,6 @@ production:
   username: <%= ENV['POSTGRES_USER'] %>
   password: <%= ENV['POSTGRES_PASSWORD'] %>
   host: <%= ENV['POSTGRES_HOST'] %>
+  connect_timeout: 2
+  checkout_timeout: 5
+  statement_timeout: 5000 # ms
