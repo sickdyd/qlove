@@ -99,7 +99,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   add_foreign_key "stats", "players"
 
   create_view "all_time_damage_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
+      SELECT row_number() OVER () AS id,
+      players.id AS player_id,
       players.name,
       players.steam_id,
       sum(stats.damage_dealt) AS total_damage_dealt,
@@ -113,7 +114,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   add_index "all_time_damage_stats", ["steam_id"], name: "index_all_time_damage_stats_on_steam_id", unique: true
 
   create_view "all_time_kills_deaths_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
+      SELECT row_number() OVER () AS id,
+      players.id AS player_id,
       players.name,
       players.steam_id,
       sum(stats.kills) AS total_kills,
@@ -131,7 +133,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   add_index "all_time_kills_deaths_stats", ["steam_id"], name: "index_all_time_kills_deaths_stats_on_steam_id", unique: true
 
   create_view "all_time_wins_losses_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
+      SELECT row_number() OVER () AS id,
+      players.id AS player_id,
       players.name,
       players.steam_id,
       sum(stats.win) AS total_wins,
@@ -145,7 +148,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   add_index "all_time_wins_losses_stats", ["steam_id"], name: "index_all_time_wins_losses_stats_on_steam_id", unique: true
 
   create_view "all_time_medals_stats", materialized: true, sql_definition: <<-SQL
-      SELECT players.id AS player_id,
+      SELECT row_number() OVER () AS id,
+      players.id AS player_id,
       players.name,
       players.steam_id,
       sum(stats.accuracy) AS accuracy,
