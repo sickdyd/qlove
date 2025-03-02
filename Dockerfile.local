@@ -11,16 +11,9 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 # Rails app lives here
 WORKDIR /rails
 
-# Use Chinese mirrors for faster builds on Tencent Cloud
-RUN rm -rf /etc/apt/sources.list.d/* && \
-    echo "" > /etc/apt/sources.list && \
-    echo "deb http://mirrors.tencent.com/debian bookworm main" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.tencent.com/debian bookworm-updates main" >> /etc/apt/sources.list && \
-    echo "deb http://mirrors.tencent.com/debian-security bookworm-security main" >> /etc/apt/sources.list
-
-# More verbose apt update
-RUN apt-get update -o Debug::Acquire::http=true && \
-    apt-get install --no-install-recommends -y -o Debug::pkgAcquire::Worker=1 curl libjemalloc2 libvips sqlite3 libpq-dev libzmq3-dev && \
+# Install base packages
+RUN apt-get update -qq && \
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libpq-dev libzmq3-dev libpq-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
 # Set production environment
@@ -37,9 +30,11 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y build-essential git pkg-config && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
+RUN gem install bundler -v 2.5.4
+
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
+RUN bundle install && \ 
     rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
     bundle exec bootsnap precompile --gemfile
 

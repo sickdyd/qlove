@@ -1,4 +1,4 @@
-source "https://rubygems.org"
+source "https://mirrors.cloud.tencent.com/rubygems/"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails"
