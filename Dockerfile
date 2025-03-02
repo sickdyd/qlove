@@ -12,7 +12,9 @@ FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
 WORKDIR /rails
 
 # Install base packages
-RUN apt-get update -qq && \
+RUN sed -i 's|http://deb.debian.org/debian|http://mirrors.tencent.com/debian|g' /etc/apt/sources.list && \
+    sed -i 's|http://security.debian.org/debian-security|http://mirrors.tencent.com/debian-security|g' /etc/apt/sources.list && \
+    apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips sqlite3 libpq-dev libzmq3-dev && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
