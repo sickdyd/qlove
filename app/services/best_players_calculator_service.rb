@@ -32,6 +32,7 @@ class BestPlayersCalculatorService < BaseCalculatorService
       kills = kills_deaths[:total_kills]
 
       {
+        player_id: player.id,
         name: player.name,
         average_accuracy: avg_acc,
         total_damage_dealt: dmg,
@@ -40,13 +41,12 @@ class BestPlayersCalculatorService < BaseCalculatorService
       }
     end.compact
 
-    sorted_data = unsorted_data
+    data = unsorted_data
       .sort_by { |player| -player[SORT_BY_COLUMN.to_sym] }
       .first(limit.to_i)
 
-    data = sorted_data.map { |player| OpenStruct.new(player) }
-
-    handle_query_results(data)
+    # To allow using dot notation to access the stat properties
+    handle_query_results(data.map{ |stat| Struct.new(*stat.keys).new(*stat.values)})
   end
 
   private
