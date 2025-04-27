@@ -51,18 +51,18 @@ rails s
 ## Samples
 
 ```sh
-### Get kills leaderboard (week)
-curl "http://localhost:3000/api/v1/leaderboards/kills?time_filter=week&formatted_table=true"
+# Get kills leaderboard (week)
+curl "http://localhost:3000/api/v1/leaderboards/kills?time_filter=week&formatted_table=true" | jq -r '.data'
 
-### Get damage dealt (month)
-curl "http://localhost:3000/api/v1/leaderboards/damage_dealt?time_filter=month&formatted_table=true"
+# Get damage dealt (month)
+curl "http://localhost:3000/api/v1/leaderboards/damage_dealt?time_filter=month&formatted_table=true" | jq -r '.data'
 
-### Get accuracy leaderboard for specific weapons
-curl "http://localhost:3000/api/v1/leaderboards/accuracy?weapons=rocket,railgun&formatted_table=true&time_filter=all_time"
+# Get accuracy leaderboard for specific weapons
+curl "http://localhost:3000/api/v1/leaderboards/accuracy?weapons=rocket,railgun&formatted_table=true&time_filter=all_time" | jq -r '.data'
 
-### Get medals leaderboard filtered by medal types
-curl "http://localhost:3000/api/v1/leaderboards/medals?medals=accuracy,excellent,humiliation&time_filter=all_time&formatted_table=true"
+# Get medals leaderboard filtered by medal types
+curl "http://localhost:3000/api/v1/leaderboards/medals?medals=accuracy,excellent,humiliation&time_filter=all_time&formatted_table=true" | jq -r '.data'
 
-### Get player stats by steam_id
-curl "http://localhost:3000/api/v1/leaderboards/stats?steam_id=76561197998172344&time_filter=month&formatted_table=true"
+# Get player stats by steam_id
+curl "http://localhost:3000/api/v1/leaderboards/stats?steam_id=76561197998172344&time_filter=month&formatted_table=true" | jq -r '.data'
 ```
