@@ -44,7 +44,8 @@ class TabletizeService
     max_lengths = headers_data.map { |header| [ header.length, MIN_COLUMN_WIDTH ].max }
     rows_data.each do |row|
       row.each_with_index do |cell, i|
-        max_lengths[i] = [ max_lengths[i], strip_formatting(cell.to_s).length ].max
+        width = Unicode::DisplayWidth.of(strip_formatting(cell.to_s))
+        max_lengths[i] = [ max_lengths[i], width ].max
       end
     end
 
@@ -55,7 +56,8 @@ class TabletizeService
     row_lines = rows_data.map do |row|
       "| " + row.each_with_index.map do |cell, i|
         formatted_cell = strip_formatting(cell.to_s)
-        formatted_cell + " " * (max_lengths[i] - formatted_cell.length)
+        width = Unicode::DisplayWidth.of(formatted_cell)
+        formatted_cell + " " * (max_lengths[i] - width)
       end.join(" | ") + " |"
     end
 
