@@ -309,6 +309,7 @@ DEPENDENCIES
   scenic
   strong_migrations
   tzinfo-data
+  unicode-display_width
 
 BUNDLED WITH
    2.5.4

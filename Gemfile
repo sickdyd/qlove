@@ -38,6 +38,8 @@ gem "rack-attack"
 
 gem "rollbar"
 
+gem "unicode-display_width"
+
 group :development, :test do
   gem "faker"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

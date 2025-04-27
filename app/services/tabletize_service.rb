@@ -1,3 +1,5 @@
+require "unicode/display_width"
+
 class TabletizeService
   MIN_COLUMN_WIDTH = 3
 
