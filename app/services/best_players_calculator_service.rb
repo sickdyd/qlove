@@ -46,7 +46,7 @@ class BestPlayersCalculatorService < BaseCalculatorService
       .first(limit.to_i)
 
     # To allow using dot notation to access the stat properties
-    handle_query_results(data.map{ |stat| Struct.new(*stat.keys).new(*stat.values)})
+    handle_query_results(data.map { |stat| Struct.new(*stat.keys).new(*stat.values) })
   end
 
   private
