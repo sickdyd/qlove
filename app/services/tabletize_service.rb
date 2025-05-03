@@ -2,6 +2,7 @@ require "unicode/display_width"
 
 class TabletizeService
   MIN_COLUMN_WIDTH = 3
+  MAX_NAME_LENGTH = 12
 
   def initialize(title:, headers:, data:)
     @title = title
@@ -15,14 +16,14 @@ class TabletizeService
 
   def truncate_name(name)
     stripped_name = strip_formatting(name || "Unknown")
-    stripped_name.length > 15 ? stripped_name[0...15] : stripped_name
+    stripped_name.length > MAX_NAME_LENGTH ? stripped_name[0...MAX_NAME_LENGTH] + "..." : stripped_name
   end
 
   def rows
     @data.each_with_index.map do |player, index|
       [ index + 1 ] + @headers.map do |header|
         value = player[header]
-        if header == :player_name
+        if header == :name
           value = truncate_name(value)
         else
           if value === 0 || value.nil?

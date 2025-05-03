@@ -48,7 +48,12 @@ class BaseCalculatorService
   private
 
   def handle_query_results(data)
-    formatted_table ? to_table(headers: headers, data: data, title: table_title) : data
+    if formatted_table
+      sanitized_data = ChineseIdeogramsReplacerService.sanitize(data)
+      return to_table(headers: headers, data: data, title: table_title)
+    end
+
+    data
   end
 
   def start_time

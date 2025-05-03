@@ -40,6 +40,8 @@ gem "rollbar"
 
 gem "unicode-display_width"
 
+gem "chinese_pinyin"
+
 group :development, :test do
   gem "faker"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

@@ -32,6 +32,7 @@ class BestPlayersCalculatorService < BaseCalculatorService
       kills = kills_deaths[:total_kills]
 
       {
+        steam_id: player.steam_id,
         player_id: player.id,
         name: player.name,
         average_accuracy: avg_acc,
