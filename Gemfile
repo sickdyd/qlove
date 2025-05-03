@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails"
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.4.6"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 gem "ffi-rzmq"
