@@ -73,6 +73,7 @@ class BestPlayersCalculatorServiceTest < ActiveSupport::TestCase
 
     AllTimeDamageStat.refresh
     AllTimeKillsDeathsStat.refresh
+    AllTimePlayTimeStat.refresh
   end
 
   teardown do
