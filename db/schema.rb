@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_04_013104) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -132,21 +132,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   add_index "all_time_kills_deaths_stats", ["player_id"], name: "index_all_time_kills_deaths_stats_on_player_id", unique: true
   add_index "all_time_kills_deaths_stats", ["steam_id"], name: "index_all_time_kills_deaths_stats_on_steam_id", unique: true
 
-  create_view "all_time_wins_losses_stats", materialized: true, sql_definition: <<-SQL
-      SELECT row_number() OVER () AS id,
-      players.id AS player_id,
-      players.name,
-      players.steam_id,
-      sum(stats.win) AS total_wins,
-      sum(stats.lose) AS total_losses
-     FROM (stats
-       JOIN players ON ((players.id = stats.player_id)))
-    GROUP BY players.id, players.steam_id
-    ORDER BY (sum(stats.win)) DESC;
-  SQL
-  add_index "all_time_wins_losses_stats", ["player_id"], name: "index_all_time_wins_losses_stats_on_player_id", unique: true
-  add_index "all_time_wins_losses_stats", ["steam_id"], name: "index_all_time_wins_losses_stats_on_steam_id", unique: true
-
   create_view "all_time_medals_stats", materialized: true, sql_definition: <<-SQL
       SELECT row_number() OVER () AS id,
       players.id AS player_id,
@@ -174,5 +159,34 @@ ActiveRecord::Schema[8.0].define(version: 2025_02_15_022110) do
   SQL
   add_index "all_time_medals_stats", ["player_id"], name: "index_all_time_medals_stats_on_player_id", unique: true
   add_index "all_time_medals_stats", ["steam_id"], name: "index_all_time_medals_stats_on_steam_id", unique: true
+
+  create_view "all_time_wins_losses_stats", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER () AS id,
+      players.id AS player_id,
+      players.name,
+      players.steam_id,
+      sum(stats.win) AS total_wins,
+      sum(stats.lose) AS total_losses
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id
+    ORDER BY (sum(stats.win)) DESC;
+  SQL
+  add_index "all_time_wins_losses_stats", ["player_id"], name: "index_all_time_wins_losses_stats_on_player_id", unique: true
+  add_index "all_time_wins_losses_stats", ["steam_id"], name: "index_all_time_wins_losses_stats_on_steam_id", unique: true
+
+  create_view "all_time_play_time_stats", materialized: true, sql_definition: <<-SQL
+      SELECT row_number() OVER () AS id,
+      players.id AS player_id,
+      players.name,
+      players.steam_id,
+      sum(stats.play_time) AS total_play_time
+     FROM (stats
+       JOIN players ON ((players.id = stats.player_id)))
+    GROUP BY players.id, players.steam_id
+    ORDER BY (sum(stats.play_time)) DESC;
+  SQL
+  add_index "all_time_play_time_stats", ["player_id"], name: "index_all_time_play_time_stats_on_player_id", unique: true
+  add_index "all_time_play_time_stats", ["steam_id"], name: "index_all_time_play_time_stats_on_steam_id", unique: true
 
 end

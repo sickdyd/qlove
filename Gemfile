@@ -42,6 +42,8 @@ gem "unicode-display_width"
 
 gem "chinese_pinyin"
 
+gem "dotiw"
+
 group :development, :test do
   gem "faker"
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

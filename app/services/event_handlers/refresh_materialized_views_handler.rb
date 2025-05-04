@@ -9,6 +9,7 @@ module EventHandlers
       AllTimeKillsDeathsStat.refresh
       AllTimeMedalsStat.refresh
       AllTimeWinsLossesStat.refresh
+      AllTimePlayTimeStat.refresh
 
       limit = 1000
 

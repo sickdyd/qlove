@@ -19,6 +19,8 @@ Rails.application.routes.draw do
         get :kills_deaths_ratio, to: "kills_deaths#kills_deaths_ratio"
         get :wins, to: "wins_losses#wins"
         get :losses, to: "wins_losses#losses"
+        get :play_time, to: "play_time#play_time"
+        get :time, to: "play_time#play_time"
       end
 
       get :stats, to: "leaderboards/accuracy#show"
