@@ -1,5 +1,5 @@
 class BestPlayersCalculatorService < BaseCalculatorService
-  HEADERS = %w[ name average_accuracy total_damage_dealt total_kills total_play_time strength]
+  HEADERS = %w[ name accuracy damage kills time strength]
   # The sort by value is generated programmatically
   SORT_BY_COLUMN = "strength".freeze
 
@@ -41,10 +41,10 @@ class BestPlayersCalculatorService < BaseCalculatorService
         steam_id: player.steam_id,
         player_id: player.id,
         name: player.name,
-        average_accuracy: average_accuracy,
-        total_damage_dealt: damage,
-        total_kills: kills,
-        total_play_time: total_play_time,
+        accuracy: average_accuracy,
+        damage: damage,
+        kills: kills,
+        time: total_play_time,
         strength: calculate_strength(average_accuracy, damage, kills, max_accuracy, max_damage, max_kills, min_play_time, max_play_time)
       }
     end.compact
