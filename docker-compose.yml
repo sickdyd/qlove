@@ -1,6 +1,6 @@
 services:
   qlove_postgres:
-    env_file: "/home/ubuntu/qlove/.env"
+    env_file: "./.env"
     image: postgres
     restart: always
     shm_size: 256mb
@@ -12,7 +12,7 @@ services:
   qlove_api:
     links:
       - qlove_postgres
-    env_file: "/home/ubuntu/qlove/.env"
+    env_file: "./.env"
     image: qlove_api:06052025
     ports:
       - 3000:3000
