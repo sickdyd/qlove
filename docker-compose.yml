@@ -18,7 +18,6 @@ services:
       - 3000:3000
     depends_on:
       - qlove_postgres
-      - ca1
 
 # Docker volumne containing the data of the Redis database
 # You can safely delete the redis service without losing data
