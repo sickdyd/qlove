@@ -2,7 +2,7 @@ require "unicode/display_width"
 
 class TabletizeService
   MIN_COLUMN_WIDTH = 3
-  MAX_NAME_LENGTH = 12
+  MAX_NAME_LENGTH = 15
 
   def initialize(title:, headers:, data:)
     @title = title
