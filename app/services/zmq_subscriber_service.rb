@@ -40,6 +40,10 @@ class ZmqSubscriberService
         loop do
           message = ""
           subscriber.recv_string(message)
+          if message.strip.empty?
+            Rails.logger.warn "ZMQ received empty message, skipping..."
+            next
+          end
           event_data = JSON.parse(message)
 
           event_type = event_data["TYPE"]
